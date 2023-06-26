@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
+import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal, PromiseLikeOfReactNode } from 'react';
 
 
 async function getData() {
@@ -84,7 +85,7 @@ export default async function Home() {
 
       <h1 className="font-bold text-2xl mb-4">Locations</h1>
       <ul className="grid grid-cols-3 gap-4">
-        {data.map((location) => (
+        {data.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; neighborhood: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
           <div className="flex flex-row justify-center  items-center my-4" key={location.id}>
             <li className="flex flex-col p-4 border border-gray-200 rounded text-center cursor-pointer bg-gray-500 text-white">
               <Link href={`/locations/${location.id}`}>
