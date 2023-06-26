@@ -1,0 +1,161 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.link {
+  background-color: #323e42;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.houseNumbers {
+  min-height: 250px;
+  display: flex;
+  background: green;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
+  /* margin: 20px; */
+  border: 1px solid white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.houseNumbers:hover {
+  opacity: 0.5;
+}
+
+.streetNumber {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  justify-text: center;
+  color: #c4c4c4;
+}
+
+.spanInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  /* justify-content: space-between; */
+  align-items: center;
+  width: 100%;
+}
+.heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #9dbf9d;
+}
+
+.streetNumber {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: gray;
+}
+
+.status {
+  color: white;
+}
+
+.type {
+  color: gray;
+  font-size: 1rem;
+  self-align: flex-end;
+}
+
+.type span {
+  color: white;
+  font-size: 1rem;
+  self-align: flex-end;
+}
+
+.attempt {
+  font-size: 0.7rem;
+  color: gray;
+}
+.notes {
+  display: flex;
+  flex-direction: column;
+  color: black;
+}
+.notes span {
+  margin-top: 0.7rem;
+  border-bottom: 1px solid white;
+  font-size: 0.7rem;
+  color: white;
+}
+
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+
+  padding: 10px;
+
+  background: #323e42;
+
+  border: 1px solid black;
+}
+
+.streetNumber span {
+  color: #333333;
+}
+
+.houseCard {
+  /* justify-content: justify;  */
+  /* width: 100%; */
+}
+
+.houseCardContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 20px;
+}
+
+.notStartedStyle {
+  background: #d3d3d3; /* Light Gray */
+}
+
+.firstAttemptStyle {
+  background: #a5d7dd; /* Pale Blue */
+}
+
+.secondAttemptStyle {
+  background: #e0d383; /* Sand Yellow */
+}
+
+.thirdAttemptStyle {
+  background: #b9c6e7; /* Lavender Blue */
+}
+
+.consentFinalYesStyle {
+  background: #9dbf9d; /* Moss Green */
+}
+
+.consentFinalNoStyle {
+  background: #c97b7b; /* Coral Red */
+}

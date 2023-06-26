@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model House {
+  id            Int      @id @default(autoincrement())
+  streetNumber  String
+  lastName      String?
+  name          String?
+  notes         String?
+  phoneOrEmail  String?
+  type          String?
+  consent       String?
+  streetId      Int
+  locationId    Int
+  lastUpdated   DateTime @default(now())
+  lastUpdatedBy String?
+  statusAttempt String?
+  Location      Location @relation(fields: [locationId], references: [id])
+  Street        Street   @relation(fields: [streetId], references: [id])
+}
+
+model Location {
+  id             Int           @id @default(autoincrement())
+  name           String?
+  neighborhood   String        @default("to be verified")
+  priorityStatus Int           @default(1)
+  House          House[]
+  ShiftLogger    ShiftLogger[]
+  Street         Street[]
+}
+
+model ShiftLogger {
+  ShiftLoggerId      Int       @id @default(autoincrement())
+  workerId           Int
+  locationId         Int
+  startingDate       DateTime  @default(now())
+  finishedDate       DateTime? @default(now())
+  updatedHouses      Int?
+  updatedHousesFinal Int?
+  pace               Int?
+  paceFinal          Int?
+  Location           Location  @relation(fields: [locationId], references: [id])
+  Worker             Worker    @relation(fields: [workerId], references: [id])
+
+  @@unique([workerId, locationId])
+}
+
+model Street {
+  id            Int       @id @default(autoincrement())
+  name          String
+  locationId    Int
+  lastVisited   DateTime? @default(now())
+  lastVisitedby String?
+  House         House[]
+  Location      Location  @relation(fields: [locationId], references: [id])
+}
+
+model Worker {
+  id          Int           @id @default(autoincrement())
+  name        String
+  role        String
+  userName    String
+  email       String
+  phone       String
+  ShiftLogger ShiftLogger[]
+}

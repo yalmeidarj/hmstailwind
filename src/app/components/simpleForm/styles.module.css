@@ -1,0 +1,12 @@
+.houseInfo {
+  background: #323e42;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  border: 1px solid #a6a6a6;
+}
