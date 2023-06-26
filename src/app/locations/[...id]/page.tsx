@@ -1,11 +1,9 @@
-// pages/locations/[id].tsx
 
-import LocationCard from '../../../../../../web/my-app/components/LocationCard';
-import StreetCard from '../../../../../../web/my-app/components/StreetCard';
 import Link from 'next/link';
 import styles from './styles.module.css';
 import { Key, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from 'react';
-import { prisma } from '../../lib/prisma'
+
+
 // async function getLocations(id: string) {
 // Get the location with the given id, using Prisma Client
 // const location = await prisma.location.findMany({
