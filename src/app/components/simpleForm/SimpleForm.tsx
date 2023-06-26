@@ -75,7 +75,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
         console.log(data);
         try {
-            const response = await fetch(`https://hmsapi.herokuapp.com/property/${houseId}`, {
+            const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
