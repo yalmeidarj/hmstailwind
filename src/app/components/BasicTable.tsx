@@ -8,11 +8,14 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 
-
+interface BasicTableProps {
+    data: Array<any>; // Replace 'any' with the appropriate type for your data
+    columns: Array<any>; // Replace 'any' with the appropriate type for your columns
+}
 
 import { useState } from 'react'
 
-export default function BasicTable({ data, columns }) {
+export default function BasicTable({ data, columns }: BasicTableProps) {
 
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState('')
@@ -57,9 +60,7 @@ export default function BasicTable({ data, columns }) {
                                                 header.getContext()
                                             )}
                                             {
-                                                { asc: '🔼', desc: '🔽' }[
-                                                header.column.getIsSorted() ?? null
-                                                ]
+                                                { asc: '🔼', desc: '🔽' }[header.column.getIsSorted() ?? undefined]
                                             }
                                         </div>
                                     )}
@@ -68,6 +69,7 @@ export default function BasicTable({ data, columns }) {
                         </tr>
                     ))}
                 </thead>
+
 
                 <tbody className='text-gray-700'>
                     {table.getRowModel().rows.map(row => (
