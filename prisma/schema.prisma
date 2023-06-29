@@ -67,7 +67,7 @@ model Street {
 model Worker {
   id          Int           @id @default(autoincrement())
   name        String
-  role        String
+  // role        String
   userName    String
   email       String
   phone       String

@@ -17,6 +17,8 @@ import { AiFillHome } from "react-icons/ai";
 import { FormLabel, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
 import { useRouter } from 'next/navigation'
+import { useAuth, useUser } from "@clerk/nextjs";
+import { DateTime } from "luxon";
 
 
 
@@ -29,6 +31,7 @@ interface MyIFormInput {
     phoneOrEmail: string;
     // phone: string;
     notes: string;
+    lastUpdatedBy: string | undefined;
 }
 
 // Define validation schema
@@ -41,6 +44,7 @@ const schema = yup.object().shape({
     // phoneOrEmail: yup.string().email("Email is invalid"),
     // phone: yup.string().matches(/^[0-9]+$/, 'Phone number must be numeric'),
     notes: yup.string(),
+    lastUpdatedBy: yup.string(),
 });
 
 interface IFormInputStreet {
@@ -58,6 +62,13 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
     const houseId = params.id;
     const streetId = params.streetId;
 
+    const { isLoaded, isSignedIn, user } = useUser();
+
+    if (!isLoaded || !isSignedIn) {
+        return null;
+    }
+
+
     // create handlesubmit function from react-hook-form
     const { handleSubmit, control, formState: { errors } } = useForm<MyIFormInput>({
         resolver: yupResolver(schema),
@@ -73,7 +84,8 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
 
 
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-        console.log(data);
+        data.lastUpdatedBy = user?.fullName;
+        data.lastUpdated = DateTime.local().setZone('America/New_York').toISO();
         try {
             const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',
@@ -93,6 +105,13 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
 
             });
 
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
+                method: 'PUT',
+
+            });
+
+
             if (!streetResponse.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -110,16 +129,24 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
         <div className={styles.container}>
             {/* <form > */}
             <form onSubmit={handleSubmit(onSubmit)}>
+                {/* <Controller name="lastUpdatedBy" value={user.firstName}>
+                    
+                        </Controller> */}
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <FormLabel id="demo-radio-buttons-group-label">Construction difficulty</FormLabel>
                         <Controller
                             name="type"
                             control={control}
+
                             render={({ field }) => (
-                                <RadioGroup {...field} row>
+                                <RadioGroup {...field}
+                                    sx={{
+                                        color: "#000",
+                                    }}
+                                    row>
                                     <FormControlLabel value="Easy" control={<Radio />} label="Easy" />
-                                    <FormControlLabel value="Medium" control={<Radio />} label="Medium" />
+                                    <FormControlLabel value="Moderate" control={<Radio />} label="Moderate" />
                                     <FormControlLabel value="Hard" control={<Radio />} label="Hard" />
                                 </RadioGroup>
                             )}
@@ -147,8 +174,6 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                         />
                         {errors.statusAttempt && <Alert severity="error">{errors.statusAttempt.message}</Alert>}
                     </Grid>
-
-
                     <Grid item xs={6}>
                         <Controller
                             name="lastName"

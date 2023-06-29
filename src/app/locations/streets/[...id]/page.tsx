@@ -54,6 +54,15 @@ function getConditionalClass(statusAttempt: string) {
     }
 }
 
+// function Wrapper({ children }: { children: ReactNode }) {
+//     "use client"
+//     return (
+//         <div className="w-full flex flex-wrap items-center justify-center">
+//             {children}
+//         </div>
+//     );
+// }
+
 export default async function Page({
     params: { id },
 }: {
