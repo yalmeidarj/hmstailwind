@@ -60,7 +60,6 @@ export default function BasicTable({ data, columns }: BasicTableProps) {
                                                 header.column.columnDef.header,
                                                 header.getContext()
                                             )}
-
                                         </div>
                                     )}
                                 </th>
