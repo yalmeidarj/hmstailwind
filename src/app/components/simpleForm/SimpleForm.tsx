@@ -31,7 +31,8 @@ interface MyIFormInput {
     phoneOrEmail: string;
     // phone: string;
     notes: string;
-    lastUpdatedBy: string | undefined;
+    lastUpdated: Date;
+    lastUpdatedBy: string;
 }
 
 // Define validation schema
@@ -44,6 +45,7 @@ const schema = yup.object().shape({
     // phoneOrEmail: yup.string().email("Email is invalid"),
     // phone: yup.string().matches(/^[0-9]+$/, 'Phone number must be numeric'),
     notes: yup.string(),
+    lastUpdated: yup.date(),
     lastUpdatedBy: yup.string(),
 });
 
@@ -84,8 +86,9 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
 
 
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-        data.lastUpdatedBy = user?.fullName;
-        data.lastUpdated = DateTime.local().setZone('America/New_York').toISO();
+        const users = user.fullName || "Unknown";
+        data.lastUpdatedBy = users;
+        data.lastUpdated = DateTime.now().toJSDate();
         try {
             const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',

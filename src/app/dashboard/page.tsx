@@ -94,11 +94,11 @@ export default async function page() {
         //     header: () => <span>Last Name</span>,
         // },
 
-        // {
-        //     header: 'Last Updated',
-        //     accessorKey: 'lastUpdated',
-        //     footer: 'Last Updated',
-        // },
+        {
+            header: 'Last Updated',
+            accessorKey: 'lastUpdated',
+            footer: 'Last Updated',
+        },
         //     cell: info => DateTime.fromISO(RowSelection.
         //     // cell: info => DateTime.fromISO(info.getValue('lastUpdated')).toLocaleString(DateTime.DATETIME_MED),
         // },
