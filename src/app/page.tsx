@@ -49,23 +49,14 @@ async function getShiftLoggerData(locationId: any) {
 
 
 // import { getAuth, clerkClient } from "@clerk/nextjs/server";
-import type { NextApiRequest, NextApiResponse } from "next";
+// import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function Home(
-  req: NextApiRequest,
-  res: NextApiResponse
+
 ) {
 
   const data = await getLocationsDataDrizzle();
-  // // const user = await currentUser();
-  // const { userId } = getAuth(req);
 
-  // const user = userId ? await clerkClient.users.getUser(userId) : null;
-
-
-
-
-  // if (!user) return <div>Not logged in</div>;
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
       {/* <h1 className="text-3xl text-black font-bold mb-6">{user?.firstName}</h1> */}
