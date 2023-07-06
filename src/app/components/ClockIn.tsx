@@ -20,26 +20,10 @@ interface Resources {
 }
 
 
-// async function userInfo() {
-//     const { isLoaded, isSignedIn, user } = useUser();
-//     if (!isLoaded || !isSignedIn) {
-//         return (
-//             <div className="flex flex-col">
-//                 <h1 className="text-2xl font-bold text-center">Please Sign In</h1>
-//             </div>
-
-//         );
-//     }
-//     else {
-//         const role = await user.unsafeMetadata.role;
-//         return role;
-//     }
-// }
-
 const ClockIn: React.FC<ClockInProps> = ({ locationId }) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
-    const [workerId, serWorkerId] = useState(user?.unsafeMetadata);
+    const workerId = user?.unsafeMetadata.id as number
     const [shiftData, setShiftData] = useState({
         workerId,
         locationId,
@@ -49,9 +33,7 @@ const ClockIn: React.FC<ClockInProps> = ({ locationId }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // setShiftData({
-        //     workerId: user.unsafeMetadata.id,
-        // });
+
         console.log(user?.unsafeMetadata)
         console.log(shiftData);
         fetch('https://hmsapi.herokuapp.com/shiftLogger', {
@@ -59,7 +41,6 @@ const ClockIn: React.FC<ClockInProps> = ({ locationId }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(shiftData),
         })
-
     };
 
 

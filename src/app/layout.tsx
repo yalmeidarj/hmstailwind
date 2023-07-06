@@ -30,32 +30,12 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const { userId } = auth();
-  // const user = await currentUser();
   return (
-    <ClerkProvider
-    // publishableKey={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
-
-    >
+    <ClerkProvider>
       <html lang="en">
         <body className={`bg-white ${inter.className}`}>
-          {/* <div className=' bg-white'> */}
           <NavBar />
-          {userId ? (
-            <div>
-
-              <GoBack text='Previous Page' />
-
-            </div>
-          ) : (
-            <div className="mt-4 lg:mt-0">
-            </div>
-          )}
-
-          {/* <GoBack
-            text='Go Back'
-          /> */}
           {children}
-          {/* </div> */}
         </body>
       </html>
     </ClerkProvider>
