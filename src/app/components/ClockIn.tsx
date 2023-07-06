@@ -78,7 +78,7 @@ const ClockIn: React.FC<ClockInProps> = ({ locationId }) => {
         <div className="flex flex-col">
             <form onSubmit={handleSubmit}>
                 <label htmlFor="workerId">Worker ID</label>
-                <h2>{user?.unsafeMetadata.role as string} </h2>
+                <h2>{(user?.unsafeMetadata.role as string || "no-role")} </h2>
                 <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Clock In
                 </button>

@@ -33,7 +33,7 @@ export default function BasicTable({ data, columns }: BasicTableProps) {
             sorting: sorting,
             globalFilter: filtering,
         },
-        onSortingChange: setSorting,
+        // onSortingChange: setSorting,
         onGlobalFilterChange: setFiltering,
     })
 
