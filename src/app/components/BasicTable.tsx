@@ -21,6 +21,7 @@ export default function BasicTable({ data, columns }: BasicTableProps) {
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState('')
 
+
     const table = useReactTable({
         data,
         columns,
@@ -32,7 +33,7 @@ export default function BasicTable({ data, columns }: BasicTableProps) {
             sorting: sorting,
             globalFilter: filtering,
         },
-        // onSortingChange: setSorting,
+        onSortingChange: setSorting,
         onGlobalFilterChange: setFiltering,
     })
 

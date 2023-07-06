@@ -1,116 +1,105 @@
-import styles from './page.module.css'
 import Link from 'next/link';
-// import { prisma } from './lib/prisma'
-import { auth } from '@clerk/nextjs';
 import { currentUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal, PromiseLikeOfReactNode } from 'react';
+import { getAuth, clerkClient } from "@clerk/nextjs/server";
 
 
-async function getData() {
-  // const prisma = new PrismaClient();
-  // const location = await prisma.location.findMany({
-  //   include: {
-  //     Street: true,
-  //   },
-  // });
-  // await prisma.$disconnect();
-  // return location;
+import { eq } from "drizzle-orm";
+import { location, street, shiftLogger, worker } from '../../drizzle/schema';
 
-  // Use the fetch API to get the data from the API..
-  try {
-    const res = await fetch('https://hmsapi.herokuapp.com/locations');
-    const location = await res.json();
-    return location;
-  }
-  catch (error) {
-    console.error('Error retrieving the locations:', error);
-    return [];
-  }
+import db from '../lib/utils/db';
+import ClockIn from './components/ClockIn';
+import { Suspense } from 'react';
+// import { useUser } from '@clerk/clerk-react'
+
+async function getLocationsDataDrizzle() {
+  // Use the drizzle-orm to get the data from the database
+  const locations = await db.select().from(location);
+  return locations;
 }
 
 async function getNumberOfStreets(locationId: any) {
-  // Use prisma.
-  // try {
-  //   // use Prisma to get the data from the database
-  //   const streets = await prisma.street.findMany({
-  //     where: {
-  //       locationId: locationId,
-  //     },
-  //   });
-  //   return streets.length;
-  // }
-  // catch (error) {
-  //   console.error('Error retrieving the streets:', error);
-  //   return [];
-  // }
-
-  // Use the fetch API to get the data from the API..
-  try {
-    const res = await fetch(`https://hmsapi.herokuapp.com/streets/${locationId}`);
-    const streets = await res.json();
-    return streets.length;
-  }
-  catch (error) {
-    console.error('Error retrieving the streets:', error);
-    return [];
-  }
+  // Use drizzle-orm to get the number of streets for each location
+  const streets = await db.select().from(street).where(eq(street.locationId, locationId));
+  return streets.length;
 
 }
 
-// const res = await fetch('http://localhost:9000/locations');
-// // The return value is *not* serialized
-// // You can return Date, Map, Set, etc.
+async function getShiftLoggerData(locationId: any) {
+  const dshiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.locationId, locationId));
 
-// // Recommendation: handle errors
-// if (!res.ok) {
-//   // This will activate the closest `error.js` Error Boundary
-//   throw new Error('Failed to fetch data');
-// }
+  const workers = await Promise.all(dshiftLoggers.map(async (logger) => {
+    const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId));
+    return (
+      <div className="flex flex-wrap justify-start items-center space-x-2">
+        {
+          workers.map((worker, index) => (
+            <div key={index} className="px-4 py-2 bg-gray-100 rounded-md shadow-sm">
+              <dd className="mt-1 text-sm text-gray-800 sm:mt-0">
+                {worker.name}
+              </dd>
+            </div>
+          ))
+        }
+      </div>
+    );
+  }));
 
-// return res.json();
-// }
-
-export default async function Home() {
+  return workers;
+}
 
 
-  // if (!session) {
-  //   redirect("/api/auth/signin");
-  // }
-  const user = await currentUser();
-  const data = await getData();
+// import { getAuth, clerkClient } from "@clerk/nextjs/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 
+export default async function Home(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+  const data = await getLocationsDataDrizzle();
+  // // const user = await currentUser();
+  // const { userId } = getAuth(req);
+
+  // const user = userId ? await clerkClient.users.getUser(userId) : null;
+
+
+
+
+  // if (!user) return <div>Not logged in</div>;
   return (
-    <main className="flex flex-col items-center justify-center space-y-4">
-
-      <h1 className="font-bold text-2xl mb-4">Locations</h1>
-      <ul className="grid grid-cols-3 gap-4">
-        {data.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; neighborhood: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
-          <div className="flex flex-row justify-center  items-center my-4" key={location.id}>
-            <li className="flex flex-col p-4 border border-gray-200 rounded text-center cursor-pointer bg-gray-500 text-white">
-              <Link href={`/locations/${location.id}`}>
-                <div className="flex flex-col items-center justify-center border border-gray-200 px-2 py-1">
-                  <p className="text-sm text-teal-400 my-1">Priority</p>
-                  <span className="text-sm text-teal-400 my-1">
-                    {location.priorityStatus}
-                  </span>
-                </div>
-                <div className="mt-4">
-
-                  {location.name}
-                  <p>{location.neighborhood}</p>
-
-                  <div className="flex flex-row justify-center items-center text-gray-700">
-                    <p className="text-sm text-teal-400 mx-2">Streets: {getNumberOfStreets(location.id)}</p>
-                    <span className="text-sm text-teal-400 mx-2">Current workers: Yuri</span>
+    <main className="flex flex-col items-center justify-center w-full py-8 px-6">
+      {/* <h1 className="text-3xl text-black font-bold mb-6">{user?.firstName}</h1> */}
+      <h1 className="text-3xl text-black font-bold mb-6">Locations</h1>
+      <Suspense fallback={<p className='text-black'>Loading</p>}>
+        <ul className="grid grid-cols-3 gap-6">
+          {data.map((location) => (
+            <div key={location.id} className="flex flex-row  justify-center items-center p-4 my-4 bg-gray-100 rounded-md shadow-md">
+              <li className="flex flex-col items-center p-4 text-center cursor-pointer hover:bg-gray-200 transition-colors duration-200">
+                <Link href={`/locations/${location.id}`}>
+                  <div className="flex flex-col items-center justify-center px-3 py-2 mb-3 bg-white rounded-md shadow-sm">
+                    <p className="text-xs font-semibold text-teal-500">Priority</p>
+                    <span className="text-xs font-semibold text-teal-500">
+                      {location.priorityStatus}
+                    </span>
                   </div>
-                </div>
-              </Link>
-            </li>
-          </div>
-        ))}
-      </ul>
+                  <div className="mt-2 mb-4 text-gray-800">
+                    {location.name}
+                    <p className="mt-2 text-sm text-gray-500">{location.neighborhood}</p>
+                    <div className="flex flex-row justify-center items-center text-gray-600 mt-4">
+                      <p className="text-xs text-teal-500 mx-2">Streets: {getNumberOfStreets(location.id)}</p>
+                      <div className="text-xs text-teal-500 mx-2">Workers:
+                        {getShiftLoggerData(location.id)}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+                <ClockIn locationId={location.id} />
+              </li>
+            </div>
+          ))}
+        </ul>
+      </Suspense>
     </main>
-
   );
 }
+

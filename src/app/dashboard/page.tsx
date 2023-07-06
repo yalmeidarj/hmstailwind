@@ -1,55 +1,42 @@
-// "use client"
-// import { DateTime } from 'luxon'
-// import { useMemo } from 'react'
-// import './App.css'
-// import movies from './MOVIE_DATA.json'
 import BasicTable from '../components/BasicTable'
-import prisma from '../../lib/utils/prisma'
-import { DateTime } from 'luxon'
-import { format } from 'date-fns';
-import { formatISO } from 'date-fns';
-import { RowSelection, flexRender } from '@tanstack/react-table';
+import db from '../../lib/utils/db'
+import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
 
 
 
 
 async function getLocationsData() {
     // Use Prisma Client to get all locations from the database
-    const locations = await prisma.location.findMany();
+    const locations = await db.select().from(location);
     return locations;
 }
 
 async function getHousesData() {
-    const houses = await prisma.house.findMany(
-        {
-            include: {
-                Location: true,
-                Street: true,
-            },
-        }
-    );
-    return houses;
+    const houses = await db.select().from(house);
+    const allShiftLoggerWithDatesAsStrings = houses.map(houses => ({
+        ...houses,
+        lastUpdated: houses.lastUpdated ? new Date(houses.lastUpdated).toISOString() : null,
+        // finishedDate: houses.finishedDate ? new Date(houses.finishedDate).toISOString() : null,
+    }));
+
+    return allShiftLoggerWithDatesAsStrings;
 }
 
 async function getWorkersData() {
-    const workers = await prisma.worker.findMany({
-        include: {
-            ShiftLogger: true,
-
-        },
-    });
+    const workers = await db.select().from(worker);
     return workers;
 }
 
 async function getShiftLoggerData() {
-    const shiftLogger = await prisma.shiftLogger.findMany({
-        include: {
-            Worker: true,
-            Location: true,
-        },
+    const allShiftLogger = await db.select().from(shiftLogger);
+    // const allShiftLoggerWithDatesAsStrings = allShiftLogger.map(shiftLogger => ({
+    //     ...shiftLogger,
+    //     startingDate: shiftLogger.startingDate ? new Date(shiftLogger.startingDate).toISOString() : null,
+    //     finishedDate: shiftLogger.finishedDate ? new Date(shiftLogger.finishedDate).toISOString() : null,
+    // }));
 
-    });
-    return shiftLogger;
+    return allShiftLogger;
+    // return allShiftLoggerWithDatesAsStrings;
 }
 
 
@@ -138,7 +125,6 @@ export default async function page() {
         },
     ]
 
-
     const workerColumns = [
         {
             header: 'ID',
@@ -161,7 +147,6 @@ export default async function page() {
             footer: 'Email',
         }
     ]
-
 
     const ShiftLoggerColumns = [
         // {

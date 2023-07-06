@@ -1,10 +1,19 @@
 "use client"
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import UserSection from './UserSection';
 import { useUser } from "@clerk/nextjs";
-import { SignOutButton } from "@clerk/nextjs";
+
+// import {
+//     ClerkProvider,
+//     SignedIn,
+//     SignedOut,
+//     SignInButton,
+//     UserButton
+// } from "@clerk/nextjs";
+// import { SignOutButton } from "@clerk/nextjs";
+import UserInfo from './UserInfo';
 
 
 const Navbar = () => {
@@ -24,7 +33,10 @@ const Navbar = () => {
                     <span className="font-semibold text-xl tracking-tight">TDX Solutions</span>
                 </Link>
             </div>
-            {isSignedIn ? (
+            <div >
+                <UserInfo />
+            </div>
+            {/* {isSignedIn ? (
                 <div>
                     <h1>{user.firstName}</h1>
                 </div>
@@ -34,7 +46,7 @@ const Navbar = () => {
                         <h1 className="text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white">Log in</h1>
                     </Link>
                 </div>
-            )}
+            )} */}
             <div className="block lg:hidden">
                 <button onClick={toggleMenu} className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
                     <svg className="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
@@ -54,7 +66,7 @@ const Navbar = () => {
                             </h1>
                         </Link>
                     </div>
-                    {isSignedIn ? (
+                    {/* {isSignedIn ? (
                         <div className="mt-4 lg:mt-0">
                             <SignOutButton />
                         </div>
@@ -64,7 +76,7 @@ const Navbar = () => {
                                 <h1 className="text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white">Log in</h1>
                             </Link>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </nav>

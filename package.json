@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "generate": "drizzle-kit generate:pg",
+    "introspect": "drizzle-kit introspect:pg",
     "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.21.10",
+    "@clerk/types": "^3.46.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.1.1",
@@ -22,9 +25,11 @@
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
+    "drizzle-orm": "^0.27.0",
     "luxon": "^3.3.0",
     "next": "13.4.7",
     "postcss": "8.4.24",
+    "postgres": "^3.3.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.0",
@@ -35,6 +40,7 @@
   },
   "devDependencies": {
     "@types/luxon": "^3.3.0",
+    "drizzle-kit": "^0.19.3",
     "prisma": "^4.16.1"
   }
 }

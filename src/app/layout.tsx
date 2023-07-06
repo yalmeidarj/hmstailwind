@@ -6,6 +6,8 @@ import { SignOutButton } from "@clerk/nextjs";
 import GoBack from './components/GoBack';
 import Link from 'next/link';
 import NavBar from './components/NavBar';
+import ClockIn from './components/ClockIn';
+// import { currentUser } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,20 +24,28 @@ const getUserPace = async () => {
   return data
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const { userId } = auth();
+  // const user = await currentUser();
   return (
-    <ClerkProvider >
+    <ClerkProvider
+    // publishableKey={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
+
+    >
       <html lang="en">
         <body className={`bg-white ${inter.className}`}>
           {/* <div className=' bg-white'> */}
           <NavBar />
           {userId ? (
-            <GoBack text='Previous Page' />
+            <div>
+
+              <GoBack text='Previous Page' />
+
+            </div>
           ) : (
             <div className="mt-4 lg:mt-0">
             </div>

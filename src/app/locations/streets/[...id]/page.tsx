@@ -2,37 +2,22 @@
 import styles from './styles.module.css';
 import Link from 'next/link';
 import { IoHomeSharp } from 'react-icons/io5';
+import { house, street } from '../../../../../drizzle/schema';
+import { eq, lt, gte, ne, inArray } from "drizzle-orm";
 
+import db from '../../../../lib/utils/db';
 
-async function getLocations(id: string) {
-    try {
-        const response = await fetch(`https://hmsapi.herokuapp.com/houses/${id}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const street = await response.json();
-        return street;
-    } catch (error) {
-        console.error('Error retrieving the location:', error);
-        return []; // Return an empty array in case of an error
-    }
-}
 
 
 async function getAllStreetNumbersOfStreet(streetId: any) {
-    try {
-        const response = await fetch(`https://hmsapi.herokuapp.com/houses/${streetId}`, { next: { revalidate: 60 } });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const streetNumbers = await response.json();
+    // Use the drizzle-orm to get the data from the database
+    const idNumber = parseInt(streetId);
+    const streetNumbers = await db.select().from(house).where(eq(house.streetId, idNumber));
 
-        return streetNumbers;
+    const previousStreet = await db.select().from(street).where(eq(street.id, idNumber));
 
-    } catch (error) {
-        console.error('Error retrieving the number of streets:', error);
-        return []; // Return an empty array in case of an error
-    }
+    return { streetNumbers, previousStreet };
+
 }
 
 function getConditionalClass(statusAttempt: string) {
@@ -54,14 +39,7 @@ function getConditionalClass(statusAttempt: string) {
     }
 }
 
-// function Wrapper({ children }: { children: ReactNode }) {
-//     "use client"
-//     return (
-//         <div className="w-full flex flex-wrap items-center justify-center">
-//             {children}
-//         </div>
-//     );
-// }
+
 
 export default async function Page({
     params: { id },
@@ -70,12 +48,18 @@ export default async function Page({
 }) {
 
     const houses = await getAllStreetNumbersOfStreet(id);
+    const mainStreetName = houses.previousStreet[0].name;
 
     return (
         <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-            <h1 className="text-4xl font-bold mb-6 text-green-600 flex items-center space-x-2"><IoHomeSharp /> <span>Houses</span></h1>
+            <Link href={`/locations/${houses.previousStreet[0].locationId}`}>
+                <button className="text-green-600 hover:underline flex items-center space-x-2 mb-4">
+                    Back to Site view
+                </button>
+            </Link>
+            <h1 className="text-4xl font-bold mb-6 text-green-600 flex items-center space-x-2"><IoHomeSharp /> <span>{mainStreetName}</span></h1>
             <div className="w-full flex flex-wrap items-center justify-center">
-                {houses.map((house: { id: number; streetNumber: string; type: string | null; name: string | null; statusAttempt: string | null; notes: string; lastUpdated: Date; }) => {
+                {houses.streetNumbers.map(house => {
                     const statusAttempt = house.statusAttempt || '';
                     return (
                         <div key={house.id} className={`w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2`}>
