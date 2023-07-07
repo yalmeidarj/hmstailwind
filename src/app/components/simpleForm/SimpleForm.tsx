@@ -27,12 +27,11 @@ interface MyIFormInput {
     type: string;
     lastName: string;
     name: string;
-    statusAttempt: string;
-    phoneOrEmail: string;
-    // phone: string;
-    notes: string;
-    lastUpdated: Date;
-    lastUpdatedBy: string;
+    statusAttempt?: string;
+    phoneOrEmail?: string;
+    notes?: string;
+    lastUpdated?: Date;
+    lastUpdatedBy?: string;
 }
 
 // Define validation schema
