@@ -22,16 +22,16 @@ import { DateTime } from "luxon";
 
 
 
-
 interface MyIFormInput {
     type: string;
     lastName: string;
     name: string;
-    statusAttempt?: string;
-    phoneOrEmail?: string;
-    notes?: string;
-    lastUpdated?: Date;
-    lastUpdatedBy?: string;
+    statusAttempt: string;
+    phoneOrEmail: string;
+    // phone: string;
+    notes: string;
+    lastUpdated: Date;
+    lastUpdatedBy: string;
 }
 
 // Define validation schema
@@ -40,10 +40,12 @@ const schema = yup.object().shape({
     lastName: yup.string().required("Last name is required"),
     name: yup.string().required("Name is required"),
     statusAttempt: yup.string(),
-    phoneOrEmail: yup.string().required("Phone or Email is required"),
+    phoneOrEmail: yup.string(),
+    // phoneOrEmail: yup.string().email("Email is invalid"),
+    // phone: yup.string().matches(/^[0-9]+$/, 'Phone number must be numeric'),
     notes: yup.string(),
-    lastUpdated: yup.date().required(),
-    lastUpdatedBy: yup.string().required(),
+    lastUpdated: yup.date(),
+    lastUpdatedBy: yup.string(),
 });
 
 
@@ -212,14 +214,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                         />
                         {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
                     </Grid>
-                    {/* <Grid item xs={6}>
-                        <Controller
-                            name="phoneOrEmail"
-                            control={control}
-                            render={({ field }) => <TextField {...field} label="Phone" fullWidth />}
-                        />
-                        {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
-                    </Grid> */}
+
                     <Grid item xs={12}>
                         <Controller
                             name="notes"
