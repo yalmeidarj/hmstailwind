@@ -22,6 +22,7 @@ import { DateTime } from "luxon";
 
 
 
+
 interface MyIFormInput {
     type: string;
     lastName: string;
@@ -48,7 +49,6 @@ const schema = yup.object().shape({
     lastUpdatedBy: yup.string(),
 });
 
-
 interface IFormInputStreet {
     lastUpdated: Date;
 }
@@ -61,23 +61,14 @@ interface ParamType {
 }
 
 const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) => {
-
     const houseId = params.id;
     const streetId = params.streetId;
+
     const { isLoaded, isSignedIn, user } = useUser();
 
     if (!isLoaded || !isSignedIn) {
         return null;
     }
-
-    const [submitSuccess, setSubmitSuccess] = useState(false);
-    const [submitError, setSubmitError] = useState(false);
-    // give alert message if submit success
-    const onSubmitSuccess = () => {
-        setSubmitSuccess(true);
-        setSubmitError(false);
-    };
-
 
 
     // create handlesubmit function from react-hook-form
@@ -88,11 +79,14 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
     // const [page, setPage] = useState(streetId);
 
     const router = useRouter();
-
+    // useEffect(() => {
+    //     // router is defined here
+    //     router.push(`/streets/${streetId}`)
+    // }, [page])
 
 
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-        const users = user.firstName || "Unknown";
+        const users = user.fullName || "Unknown";
         data.lastUpdatedBy = users;
         data.lastUpdated = DateTime.now().toJSDate();
         try {
@@ -103,20 +97,23 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                 },
                 body: JSON.stringify(data),
             });
-            onSubmitSuccess();
+
             if (!response.ok) {
                 console.log(response);
                 throw new Error('Network response was not ok');
             }
-            // await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const streetResponse = await fetch(`https://hmsapi.herokuapp.com/streetsLastVisit/${streetId}`, {
                 method: 'PUT',
+
             });
 
-            // await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
                 method: 'PUT',
+
             });
+
 
             if (!streetResponse.ok) {
                 throw new Error('Network response was not ok');
@@ -124,26 +121,16 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
         } catch (error) {
             console.error('There has been a problem with your fetch operation: ', error);
         }
-
         await new Promise(resolve => setTimeout(resolve, 2000));
         // const router = useRouter();
         router.push(`/locations/streets/${streetId}`)
-
+        // setPage(streetId);
     };
 
 
     return (
         <div className={styles.container}>
             {/* <form > */}
-            {submitError && (
-                <div>
-                    <Alert severity="error">This is an error alert — check it out!</Alert>
-                </div>
-            )}
-
-            {submitSuccess && (
-                <div><Alert severity="success">Details Updated - Going back street view...</Alert></div>
-            )}
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* <Controller name="lastUpdatedBy" value={user.firstName}>
                     
@@ -214,7 +201,14 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                         />
                         {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
                     </Grid>
-
+                    {/* <Grid item xs={6}>
+                        <Controller
+                            name="phoneOrEmail"
+                            control={control}
+                            render={({ field }) => <TextField {...field} label="Phone" fullWidth />}
+                        />
+                        {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
+                    </Grid> */}
                     <Grid item xs={12}>
                         <Controller
                             name="notes"
@@ -253,7 +247,6 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                     </Grid>
                 </Grid>
             </form>
-
         </div>
 
     );
