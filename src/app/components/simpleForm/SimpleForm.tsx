@@ -3,15 +3,13 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
 import Alert from '@mui/material/Alert';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import GoBack from "../GoBack";
 import { useParams } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { AiFillHome } from "react-icons/ai";
 import { FormLabel, Select } from "@mui/material";
@@ -20,36 +18,15 @@ import { useRouter } from 'next/navigation'
 import { useAuth, useUser } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 
-
-
-
 interface MyIFormInput {
     type: string;
     lastName: string;
     name: string;
-    statusAttempt?: string;
-    phoneOrEmail?: string;
-    notes?: string;
-    lastUpdated?: Date;
-    lastUpdatedBy?: string;
-}
-
-// Define validation schema
-const schema = yup.object().shape({
-    type: yup.string().required("House type is required"),
-    lastName: yup.string().required("Last name is required"),
-    name: yup.string().required("Name is required"),
-    statusAttempt: yup.string(),
-    phoneOrEmail: yup.string(),
-    // phoneOrEmail: yup.string().email("Email is invalid"),
-    // phone: yup.string().matches(/^[0-9]+$/, 'Phone number must be numeric'),
-    notes: yup.string(),
-    lastUpdated: yup.date(),
-    lastUpdatedBy: yup.string(),
-});
-
-interface IFormInputStreet {
+    statusAttempt: string;
+    phoneOrEmail: string;
+    notes: string;
     lastUpdated: Date;
+    lastUpdatedBy: string;
 }
 
 interface ParamType {
@@ -69,20 +46,10 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
         return null;
     }
 
-
     // create handlesubmit function from react-hook-form
-    const { handleSubmit, control, formState: { errors } } = useForm<MyIFormInput>({
-        resolver: yupResolver(schema),
-    });
-
-    // const [page, setPage] = useState(streetId);
+    const { handleSubmit, control, formState: { errors } } = useForm<MyIFormInput>();
 
     const router = useRouter();
-    // useEffect(() => {
-    //     // router is defined here
-    //     router.push(`/streets/${streetId}`)
-    // }, [page])
-
 
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
         const users = user.fullName || "Unknown";
@@ -113,7 +80,6 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
 
             });
 
-
             if (!streetResponse.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -121,26 +87,18 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
             console.error('There has been a problem with your fetch operation: ', error);
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
-        // const router = useRouter();
         router.push(`/locations/streets/${streetId}`)
-        // setPage(streetId);
     };
-
 
     return (
         <div className={styles.container}>
-            {/* <form > */}
             <form onSubmit={handleSubmit(onSubmit)}>
-                {/* <Controller name="lastUpdatedBy" value={user.firstName}>
-                    
-                        </Controller> */}
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <FormLabel id="demo-radio-buttons-group-label">Construction difficulty</FormLabel>
                         <Controller
                             name="type"
                             control={control}
-
                             render={({ field }) => (
                                 <RadioGroup {...field}
                                     sx={{
@@ -200,14 +158,6 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                         />
                         {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
                     </Grid>
-                    {/* <Grid item xs={6}>
-                        <Controller
-                            name="phoneOrEmail"
-                            control={control}
-                            render={({ field }) => <TextField {...field} label="Phone" fullWidth />}
-                        />
-                        {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
-                    </Grid> */}
                     <Grid item xs={12}>
                         <Controller
                             name="notes"
@@ -229,20 +179,15 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                         xs={6}>
                         <Button
                             sx={{
-                                // backgroundColor: "#fff",
-
                                 borderRadius: 1,
                                 borderColor: "#fff",
                                 fontSize: 14,
                                 padding: "10px 20px",
-
                             }}
-                            // fullWidth
                             onClick={handleSubmit(onSubmit)}
                             type="submit" variant="contained" >
                             UPDATE DETAILS
                         </Button>
-                        {/* <GoBack text="Previous" /> */}
                     </Grid>
                 </Grid>
             </form>
@@ -251,5 +196,3 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
     );
 };
 export default SimpleForm;
-
-
