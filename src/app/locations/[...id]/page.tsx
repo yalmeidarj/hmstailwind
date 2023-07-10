@@ -1,6 +1,5 @@
 
 import Link from 'next/link';
-import styles from './styles.module.css';
 import { Key, ReactElement, JSXElementConstructor, ReactFragment, ReactPortal, PromiseLikeOfReactNode } from 'react';
 import { prisma } from '../../../lib/utils/prisma';
 import db from '@/lib/utils/db';
@@ -64,24 +63,25 @@ export default async function Page({ params }: PageProps) {
             <main className="flex flex-col items-center justify-center w-full py-8 px-6">
                 <Link href={`/`}>
                     <button className="text-green-600 hover:underline flex items-center space-x-2 mb-4">
-                        Back to All Locations
+                        Back to All Sites
                     </button>
                 </Link>
-                <h1 className={styles.heading}>Streets of: <span>{location.name}</span> </h1>
-                <div className={styles.streetSection}>
+                <h1 className="text-blue-900">Streets of: <span>{location.name}</span> </h1>
+                <div className="flex flex-row flex-wrap justify-center bg-white rounded shadow-md">
                     {streets.map((street) => (
-                        <div className={styles.streetCard} key={street.id}>
+                        <div className="w-full sm:w-auto p-6 border border-white rounded" key={street.id}>
                             <Link href={`/locations/streets/${street.id}`}>
-                                <div className={styles.streetList}>
-                                    <h1 className={styles.streetName} key={street.id}>{street.name}</h1>
-                                    <div className={styles.streetInfo}>
-                                        <h1 className={styles.streetEntry}>Last Visited Date: <span>{street.lastVisited ? new Date(street.lastVisited).toLocaleString() : 'N/A'}</span></h1>
-
-
+                                <div className="flex flex-col h-48 gap-2 bg-gray-800 p-4 rounded border border-white">
+                                    <h1 className="text-white" key={street.id}>{street.name}</h1>
+                                    <div className="text-xs">
+                                        <h1 className="text-xs text-gray-500">Last Visited By: <span className="text-gray-300 font-bold">{street.lastVisitedby}</span></h1>
+                                        <h2 className="text-xs text-gray-500">Date: <span className="text-gray-300 font-bold">{street.lastVisited ? new Date(street.lastVisited).toLocaleString() : 'N/A'}</span></h2>
+                                        <h3 className="text-xs text-gray-500">Total Properties: <span className="text-gray-300 font-bold">{streets.length}</span></h3>
                                     </div>
                                 </div>
                             </Link>
                         </div>
+
                     ))}
                 </div>
             </main >

@@ -1,65 +1,67 @@
 "use client"
-// components/ClockIn.tsx
-import React, { useState } from 'react';
+
+import React, { useState, useEffect, Key } from 'react';
 import { useUser } from "@clerk/nextjs";
-import { Key } from 'react';
-import { worker } from '../../../drizzle/schema';
-import { el } from 'date-fns/locale';
-import { ClientResource, ActiveSessionResource, UserResource } from '@clerk/types';
-// import { userInfo } from 'os';
 
 interface ClockInProps {
-    // workerId: Key | null | undefined;
-    locationId: Key | null | undefined;
+    siteId: Key | null | undefined;
 }
 
-interface Resources {
-    client: ClientResource;
-    session?: ActiveSessionResource | null;
-    user?: UserResource | null;
-}
-
-
-const ClockIn: React.FC<ClockInProps> = ({ locationId }) => {
+const ClockIn: React.FC<ClockInProps> = ({ siteId }) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
-    const workerId = user?.unsafeMetadata.id as number
-    const [shiftData, setShiftData] = useState({
-        workerId,
-        locationId,
-        startingDate: new Date().toISOString(),
-    });
+    const [shiftData, setShiftData] = useState<{ workerId: number, locationId: number, isActive: boolean, startingDate: string } | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        if (user && siteId) {
+            const workerId = user.unsafeMetadata.id as number;
+            const locationId = siteId as number;
+            const isActive = true;
+            setShiftData({
+                workerId,
+                locationId,
+                isActive,
+                startingDate: new Date().toISOString(),
+            });
+        }
+    }, [user, siteId]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        try {
+            const response = await fetch('https://hmsapi.herokuapp.com/shiftLogger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(shiftData),
+            });
+            const responseData = await response.json();
+            if (!response.ok) {
+                throw new Error(responseData.error || 'POST request failed');
+            }
 
-        console.log(user?.unsafeMetadata)
-        console.log(shiftData);
-        fetch('https://hmsapi.herokuapp.com/shiftLogger', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(shiftData),
-        })
+            const updateUser = user?.update({
+                unsafeMetadata: { "id": shiftData?.workerId, "isClockedIn": true }
+            });
+            if (updateUser) {
+                console.log('Updated user unsafeMetadata', updateUser);
+            }
+        } catch (error) {
+            console.error('Error occurred:');
+        }
     };
-
 
     if (!isLoaded || !isSignedIn) {
         return (
             <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-center">Please Sign In</h1>
+                <h1 className="text-2xl font-bold text-center">Waiting page to load...</h1>
             </div>
-
         );
     }
 
-    // const role: React.ReactNode = user.unsafeMetadata.role || "Unknown";
-    // const userI = await userInfo();
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center">
             <form onSubmit={handleSubmit}>
-                <label htmlFor="workerId">Worker ID</label>
-                <h2>{(user?.unsafeMetadata.role as string || "no-role")} </h2>
                 <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Clock In
                 </button>

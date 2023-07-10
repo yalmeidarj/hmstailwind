@@ -25,6 +25,7 @@ interface MyIFormInput {
     statusAttempt: string;
     phoneOrEmail: string;
     notes: string;
+    isActive: boolean;
     lastUpdated: Date;
     lastUpdatedBy: string;
 }
@@ -52,9 +53,12 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
     const router = useRouter();
 
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-        const users = user.fullName || "Unknown";
-        data.lastUpdatedBy = users;
+        // const users = user.fullName || "Unknown";
+        // const workerId = user?.unsafeMetadata.id as number
+
+        data.lastUpdatedBy = user.fullName || "Unknown";
         data.lastUpdated = DateTime.now().toJSDate();
+        data.isActive = true;
         try {
             const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',
@@ -63,23 +67,26 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                 },
                 body: JSON.stringify(data),
             });
-
             if (!response.ok) {
                 console.log(response);
                 throw new Error('Network response was not ok');
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${user.id}`, {
+                method: 'PUT',
+            }
+            );
+            if (!shiftLoggerResponse.ok) {
+                throw new Error('Network response was not ok');
+            }
             const streetResponse = await fetch(`https://hmsapi.herokuapp.com/streetsLastVisit/${streetId}`, {
                 method: 'PUT',
-
             });
-
             await new Promise(resolve => setTimeout(resolve, 1000));
             const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
                 method: 'PUT',
-
             });
-
             if (!streetResponse.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -95,7 +102,8 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <FormLabel id="demo-radio-buttons-group-label">Construction difficulty</FormLabel>
+                        {/* <FormLabel id="demo-radio-buttons-group-label">Construction difficulty</FormLabel> */}
+                        {/* Construction type */}
                         <Controller
                             name="type"
                             control={control}
@@ -126,6 +134,9 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                                     <MenuItem value={"1st attempt"}>1st Attempt</MenuItem>
                                     <MenuItem value={"2nd attempt"}>2nd Attempt</MenuItem>
                                     <MenuItem value={"3rd attempt"}>3rd Attempt</MenuItem>
+                                    <MenuItem value={"4th attempt"}>4th Attempt</MenuItem>
+                                    <MenuItem value={"5th attempt"}>5th Attempt</MenuItem>
+                                    <MenuItem value={"engineer visit required"}>Engineer visit required</MenuItem>
                                     <MenuItem value={"consent final yes"}>consent final yes</MenuItem>
                                     <MenuItem value={"consent final no"}>consent final no</MenuItem>
                                     <MenuItem value={"drop type unverified"}>drop type unverified</MenuItem>

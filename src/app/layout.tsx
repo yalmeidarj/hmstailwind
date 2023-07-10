@@ -7,7 +7,6 @@ import GoBack from './components/GoBack';
 import Link from 'next/link';
 import NavBar from './components/NavBar';
 import ClockIn from './components/ClockIn';
-// import { currentUser } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -35,6 +34,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={`bg-white ${inter.className}`}>
           <NavBar />
+          {/* <ShiftManager /> */}
           {children}
         </body>
       </html>

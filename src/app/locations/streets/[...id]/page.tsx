@@ -23,21 +23,28 @@ async function getAllStreetNumbersOfStreet(streetId: any) {
 function getConditionalClass(statusAttempt: string) {
     switch (statusAttempt) {
         case 'not started':
-            return 'bg-gray-300';
+            return 'bg-gray-300 text-gray-800';
         case '1st attempt':
-            return 'bg-blue-200';
+            return 'bg-blue-200 text-blue-900';
         case '2nd attempt':
-            return 'bg-yellow-200';
+            return 'bg-yellow-200 text-yellow-900';
         case '3rd attempt':
-            return 'bg-indigo-200';
+            return 'bg-indigo-200 text-indigo-900';
+        case '4th attempt':
+            return 'bg-orange-200 text-orange-900';
+        case '5th attempt':
+            return 'bg-purple-200 text-purple-900';
         case 'consent final yes':
-            return 'bg-green-200';
+            return 'bg-green-200 text-green-900';
         case 'consent final no':
-            return 'bg-red-200';
+            return 'bg-red-200 text-red-900';
+        case 'engineer visit required':
+            return 'bg-teal-200 text-teal-900';
         default:
-            return '';
+            return 'border-2 border-black text-blue-900';
     }
 }
+
 
 
 
@@ -61,17 +68,22 @@ export default async function Page({
             <div className="w-full flex flex-wrap items-center justify-center">
                 {houses.streetNumbers.map(house => {
                     const statusAttempt = house.statusAttempt || '';
+                    const type = house.type || 'Not Checked';
                     return (
                         <div key={house.id} className={`w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2`}>
-                            {/* // <div key={house.id} className={`w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2 min-w-0`}> */}
                             <Link href={`/locations/streets/house/${house.id}`} className={`w-full h-full flex flex-col items-start justify-between py-4 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:opacity-70 ${getConditionalClass(statusAttempt)}`}>
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-700 mb-2">{house.streetNumber}</h1>
-                                <h3 className="text-md sm:text-lg md:text-xl font-semibold mb-2">Type: <span className="font-normal">{house.type}</span></h3>
-                                <div className="w-full border-t border-b border-gray-300 py-2 mb-2">
-                                    <h2 className="text-xs sm:text-sm md:text-base text-gray-500 mb-1">Attempt:</h2>
-                                    <span className="text-xs sm:text-sm md:text-base">{house.statusAttempt}</span>
+                                <h1 className="text-lg sm:text-xl text-center items-center p-2 md:text-2xl lg:text-3xl font-bold leading-tight mb-2">{house.streetNumber}</h1>
+                                <div className="flex flex-row w-full justify-around border-t border-b border-white py-2 mb-2">
+                                    <div className='flex flex-col justify-center items-center border-r p-2 border-white'>
+                                        <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-semibold leading-snug mb-2">Attempt:</h2>
+                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{house.statusAttempt}</span>
+                                    </div>
+                                    <div className='flex flex-col justify-center p-2 items-center'>
+                                        <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-semibold  leading-snug mb-2">Type:</h2>
+                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{type}</span>
+                                    </div>
                                 </div>
-                                <div className="text-xs sm:text-sm md:text-base text-gray-700">
+                                <div className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed text-gray-700">
                                     <span className="font-bold">Notes:</span> {house.notes?.substring(0, 20)}...
                                 </div>
                             </Link>
