@@ -66,7 +66,7 @@ const LocationCard: React.FC<LocationCardProps> = ({ location }) => {
 				</Link>
 				{/* Check if user is clocked in, if not, show clockOut */}
 				{
-					<ClockIn locationId={location.id} />
+					<ClockIn siteId={location.id} />
 				}
 			</li>
 		</div>
