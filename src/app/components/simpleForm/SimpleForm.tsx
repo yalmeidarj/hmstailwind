@@ -19,7 +19,9 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import { DateTime } from "luxon";
 
 interface MyIFormInput {
+    id: string | number;
     type: string;
+
     lastName: string;
     name: string;
     statusAttempt: string;
@@ -34,12 +36,28 @@ interface ParamType {
     id: {
         house: string;
         street: string;
+        name: string;
+        lastName: string;
+        statusAttempt: string;
+        emailOrPhone: string;
+        notes: string;
+        type: string;
+        streetNumber: string;
     }
 }
 
-const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) => {
+const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: string, lastName: string, statusAttempt: string, emailOrPhone: string, notes: string, type: string, streetNumber: string } }) => {
     const houseId = params.id;
     const streetId = params.streetId;
+    const name = params.name;
+    const lastName = params.lastName;
+    const statusAttempt = params.statusAttempt;
+    const emailOrPhone = params.emailOrPhone;
+    const notes = params.notes;
+    const type = params.type;
+    const streetNumber = params.streetNumber;
+
+
 
     const { isLoaded, isSignedIn, user } = useUser();
 
@@ -52,13 +70,53 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
 
     const router = useRouter();
 
-    const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-        // const users = user.fullName || "Unknown";
-        // const workerId = user?.unsafeMetadata.id as number
+    // const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
+    //     // const users = user.fullName || "Unknown";
+    //     // const workerId = user?.unsafeMetadata.id as number
 
-        data.lastUpdatedBy = user.fullName || "Unknown";
-        data.lastUpdated = DateTime.now().toJSDate();
-        data.isActive = true;
+    //     data.lastUpdatedBy = user.fullName || "Unknown";
+    //     data.lastUpdated = DateTime.now().toJSDate();
+    //     data.isActive = true;
+    //     try {
+    //         const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
+    //             method: 'PUT',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(data),
+    //         });
+    //         if (!response.ok) {
+    //             console.log(response);
+    //             throw new Error('Network response was not ok');
+    //         }
+    //         await new Promise(resolve => setTimeout(resolve, 1000));
+
+    //         const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${user.id}`, {
+    //             method: 'PUT',
+    //         }
+    //         );
+    //         if (!shiftLoggerResponse.ok) {
+    //             throw new Error('Network response was not ok');
+    //         }
+    //         const streetResponse = await fetch(`https://hmsapi.herokuapp.com/streetsLastVisit/${streetId}`, {
+    //             method: 'PUT',
+    //         });
+    //         await new Promise(resolve => setTimeout(resolve, 1000));
+    //         const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
+    //             method: 'PUT',
+    //         });
+    //         if (!streetResponse.ok) {
+    //             throw new Error('Network response was not ok');
+    //         }
+    //     } catch (error) {
+    //         console.error('There has been a problem with your fetch operation: ', error);
+    //     }
+    //     await new Promise(resolve => setTimeout(resolve, 2000));
+    //     router.push(`/locations/streets/${streetId}`)
+    // };
+
+
+    const handleHouseStreetUpdate: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
         try {
             const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',
@@ -71,31 +129,90 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                 console.log(response);
                 throw new Error('Network response was not ok');
             }
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation: ', error.message);
+        }
+    }
 
-            const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${user.id}`, {
+
+    const [siteId, setSiteId] = useState(user.unsafeMetadata.ShiftLoggerId);
+    const [loggerData, setLoggerData] = useState({
+        isActive: false,
+        finishedDate: DateTime.now().toJSDate(),
+    });
+    const id = user.unsafeMetadata.id;
+    const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
+        data.lastUpdatedBy = user.fullName || "Unknown";
+        data.lastUpdated = DateTime.now().toJSDate();
+        setSiteId(user.unsafeMetadata.ShiftLoggerId);
+
+        // if ({
+        //     data.statusAttempt == 'consent final no'
+        // })
+        // data.isActive = true;
+        try {
+            const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
                 method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                console.log(response);
+                throw new Error('Network response was not ok');
             }
-            );
+
+            setLoggerData({
+                isActive: false,
+                finishedDate: DateTime.now().toJSDate(),
+            })
+            console.log(loggerData)
+            // similar headers and body might be needed here and in the other fetch calls
+            const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${siteId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ loggerData }), // modify this as necessary
+            });
+
             if (!shiftLoggerResponse.ok) {
                 throw new Error('Network response was not ok');
             }
+
+            const streetData = {
+                // lastVisited: DateTime.now().toJSDate(),
+                lastvisitedby: user?.fullName
+            }
+            console.log(streetData);
+
             const streetResponse = await fetch(`https://hmsapi.herokuapp.com/streetsLastVisit/${streetId}`, {
                 method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(streetData),
             });
             await new Promise(resolve => setTimeout(resolve, 1000));
-            const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
+            const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${id}`, {
                 method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
             });
             if (!streetResponse.ok) {
                 throw new Error('Network response was not ok');
             }
+
         } catch (error) {
-            console.error('There has been a problem with your fetch operation: ', error);
+            console.error(error);
         }
-        await new Promise(resolve => setTimeout(resolve, 2000));
+
         router.push(`/locations/streets/${streetId}`)
     };
+
 
     return (
         <div className={styles.container}>
@@ -136,7 +253,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string } }) =>
                                     <MenuItem value={"3rd attempt"}>3rd Attempt</MenuItem>
                                     <MenuItem value={"4th attempt"}>4th Attempt</MenuItem>
                                     <MenuItem value={"5th attempt"}>5th Attempt</MenuItem>
-                                    <MenuItem value={"engineer visit required"}>Engineer visit required</MenuItem>
+                                    <MenuItem value={"engineer visit required"}>engineer visit required</MenuItem>
                                     <MenuItem value={"consent final yes"}>consent final yes</MenuItem>
                                     <MenuItem value={"consent final no"}>consent final no</MenuItem>
                                     <MenuItem value={"drop type unverified"}>drop type unverified</MenuItem>

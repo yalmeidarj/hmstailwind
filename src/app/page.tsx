@@ -10,6 +10,8 @@ import db from '../lib/utils/db';
 import ClockIn from './components/ClockIn';
 import { Suspense } from 'react';
 import ShiftManager from './components/ShiftManager';
+import Loading from './components/Loading';
+import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 // import LocationCard from './components/LocationCard';
 
 
@@ -61,19 +63,10 @@ export default async function Home() {
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
       <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
 
-      <ShiftManager sites={data} />
+      {/* <ShiftManager sites={data} /> */}
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.map((location) => (
-          <Suspense fallback={
-            <div className='flex justify-center items-center h-full'>
-              <div className='animate-spin mr-3'>
-                <svg className='w-5 h-5 text-black' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M12 6v6m0 0v6m0-6a6 6 0 110-6m0 6a6 6 0 016-6' />
-                </svg>
-              </div>
-              <p>Loading...</p>
-            </div>
-          }>
+          <Suspense fallback={<SiteLoadingSkeleton />}>
             <li key={location.id} className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
               <Link href={`/locations/${location.id}`}>
                 <div className="block">
@@ -94,7 +87,6 @@ export default async function Home() {
                   </p>
                 </div>
               </Link>
-              {/* <ClockIn locationId={location.id} /> */}
             </li>
           </Suspense>
         ))}

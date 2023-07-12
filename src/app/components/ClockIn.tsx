@@ -3,6 +3,8 @@
 import React, { useState, useEffect, Key } from 'react';
 import { useUser } from "@clerk/nextjs";
 
+const API_URL = 'https://hmsapi.herokuapp.com/shiftLogger';
+
 interface ClockInProps {
     siteId: Key | null | undefined;
 }
@@ -30,39 +32,40 @@ const ClockIn: React.FC<ClockInProps> = ({ siteId }) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('https://hmsapi.herokuapp.com/shiftLogger', {
+            const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(shiftData),
             });
             const responseData = await response.json();
             if (!response.ok) {
-                throw new Error(responseData.error || 'POST request failed');
+                throw new Error(`POST request failed: ${responseData.error || ''}`);
             }
-
+            const shifLoggerId = responseData.ShiftLoggerId;
             const updateUser = user?.update({
-                unsafeMetadata: { "id": shiftData?.workerId, "isClockedIn": true }
+                unsafeMetadata: { "id": shiftData?.workerId, "isClockedIn": true, "ShiftLoggerId": shifLoggerId }
             });
+            console.log('ShiftLogger ID:', shifLoggerId);
             if (updateUser) {
                 console.log('Updated user unsafeMetadata', updateUser);
             }
         } catch (error) {
-            console.error('Error occurred:');
+            console.error(`Error occurred: ${error}`);
         }
     };
 
     if (!isLoaded || !isSignedIn) {
         return (
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-center">Waiting page to load...</h1>
+            <div className="flex flex-col items-center mt-8">
+                <h1 className="text-2xl font-bold">Waiting for page to load...</h1>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-center">
-            <form onSubmit={handleSubmit}>
-                <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <div className="flex flex-col items-center mt-8">
+            <form onSubmit={handleSubmit} className="inline-flex">
+                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Clock In
                 </button>
             </form>
@@ -71,3 +74,4 @@ const ClockIn: React.FC<ClockInProps> = ({ siteId }) => {
 };
 
 export default ClockIn;
+

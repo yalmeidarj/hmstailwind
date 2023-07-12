@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { IoHomeSharp } from 'react-icons/io5';
 import { house, street } from '../../../../../drizzle/schema';
 import { eq, lt, gte, ne, inArray } from "drizzle-orm";
+import { Suspense } from 'react';
 
 import db from '../../../../lib/utils/db';
 
@@ -19,6 +20,7 @@ async function getAllStreetNumbersOfStreet(streetId: any) {
     return { streetNumbers, previousStreet };
 
 }
+
 
 function getConditionalClass(statusAttempt: string) {
     switch (statusAttempt) {
@@ -66,12 +68,12 @@ export default async function Page({
             </Link>
             <h1 className="text-4xl font-bold mb-6 text-green-600 flex items-center space-x-2"><IoHomeSharp /> <span>{mainStreetName}</span></h1>
             <div className="w-full flex flex-wrap items-center justify-center">
-                {houses.streetNumbers.map(house => {
-                    const statusAttempt = house.statusAttempt || '';
-                    const type = house.type || 'Not Checked';
-                    return (
+                {houses.streetNumbers.map(house => (
+                    // const type = house.type || 'Not Checked';
+                    // const statusAttempt = house.statusAttempt || '';
+                    <Suspense fallback={<p className='text-black'>Loading</p>}>
                         <div key={house.id} className={`w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2`}>
-                            <Link href={`/locations/streets/house/${house.id}`} className={`w-full h-full flex flex-col items-start justify-between py-4 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:opacity-70 ${getConditionalClass(statusAttempt)}`}>
+                            <Link href={`/locations/streets/house/${house.id}`} className={`w-full h-full flex flex-col items-start justify-between py-4 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:opacity-70 ${getConditionalClass(house?.statusAttempt ?? " ")}`}>
                                 <h1 className="text-lg sm:text-xl text-center items-center p-2 md:text-2xl lg:text-3xl font-bold leading-tight mb-2">{house.streetNumber}</h1>
                                 <div className="flex flex-row w-full justify-around border-t border-b border-white py-2 mb-2">
                                     <div className='flex flex-col justify-center items-center border-r p-2 border-white'>
@@ -80,16 +82,17 @@ export default async function Page({
                                     </div>
                                     <div className='flex flex-col justify-center p-2 items-center'>
                                         <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-semibold  leading-snug mb-2">Type:</h2>
-                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{type}</span>
+                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{house.type}</span>
                                     </div>
                                 </div>
                                 <div className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed text-gray-700">
-                                    <span className="font-bold">Notes:</span> {house.notes?.substring(0, 20)}...
+                                    <span className="font-bold">Notes:</span> {house.notes?.substring(0, 40)}...
                                 </div>
                             </Link>
                         </div>
-                    );
-                })}
+                        {/* ); */}
+                    </Suspense>
+                ))}
             </div>
         </main>
     );

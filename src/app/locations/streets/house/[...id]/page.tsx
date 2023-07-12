@@ -78,15 +78,15 @@ export default async function Page({ params }: { params: { id: string } }) {
                             params={{
                                 id: house.id,
                                 streetId: house.streetId,
+                                name: house.name,
+                                lastName: house.lastName,
+                                statusAttempt: house.statusAttempt,
+                                emailOrPhone: house.emailOrPhone,
+                                notes: house.notes,
+                                type: house.type,
+                                streetNumber: house.streetNumber
                             }}
                         // onSubmit={handleSubmit}
-                        // name={house.name}
-                        // lastName={house.lastName}
-                        // statusAttempt={house.statusAttempt}
-                        // emailOrPhone={house.emailOrPhone}
-                        // notes={house.notes}
-                        // type={house.type}
-                        // streetNumber={house.streetNumber}
                         />
                     </Suspense>
                 </div>
