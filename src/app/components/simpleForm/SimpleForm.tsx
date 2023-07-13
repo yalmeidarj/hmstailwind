@@ -70,50 +70,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
 
     const router = useRouter();
 
-    // const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
-    //     // const users = user.fullName || "Unknown";
-    //     // const workerId = user?.unsafeMetadata.id as number
 
-    //     data.lastUpdatedBy = user.fullName || "Unknown";
-    //     data.lastUpdated = DateTime.now().toJSDate();
-    //     data.isActive = true;
-    //     try {
-    //         const response = await fetch(`https://hmsapi.herokuapp.com/houses/${houseId}`, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(data),
-    //         });
-    //         if (!response.ok) {
-    //             console.log(response);
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         await new Promise(resolve => setTimeout(resolve, 1000));
-
-    //         const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${user.id}`, {
-    //             method: 'PUT',
-    //         }
-    //         );
-    //         if (!shiftLoggerResponse.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //         const streetResponse = await fetch(`https://hmsapi.herokuapp.com/streetsLastVisit/${streetId}`, {
-    //             method: 'PUT',
-    //         });
-    //         await new Promise(resolve => setTimeout(resolve, 1000));
-    //         const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${user.id}`, {
-    //             method: 'PUT',
-    //         });
-    //         if (!streetResponse.ok) {
-    //             throw new Error('Network response was not ok');
-    //         }
-    //     } catch (error) {
-    //         console.error('There has been a problem with your fetch operation: ', error);
-    //     }
-    //     await new Promise(resolve => setTimeout(resolve, 2000));
-    //     router.push(`/locations/streets/${streetId}`)
-    // };
 
 
     const handleHouseStreetUpdate: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
@@ -169,17 +126,17 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
             })
             console.log(loggerData)
             // similar headers and body might be needed here and in the other fetch calls
-            const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${siteId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ loggerData }), // modify this as necessary
-            });
+            // const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${siteId}`, {
+            //     method: 'PUT',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ loggerData }), // modify this as necessary
+            // });
 
-            if (!shiftLoggerResponse.ok) {
-                throw new Error('Network response was not ok');
-            }
+            // if (!shiftLoggerResponse.ok) {
+            //     throw new Error('Network response was not ok');
+            // }
 
             const streetData = {
                 // lastVisited: DateTime.now().toJSDate(),
