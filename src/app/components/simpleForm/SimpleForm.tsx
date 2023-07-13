@@ -87,7 +87,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
-            console.error('There has been a problem with your fetch operation: ', error.message);
+            console.error('There has been a problem with your fetch operation: ', error);
         }
     }
 
