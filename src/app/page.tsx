@@ -48,7 +48,7 @@ type ShiftData = {
 
 async function getShiftLogger(workerId: any) {
   const shiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.workerId, workerId)));
-  return shiftLoggers as ShiftData[];
+  return shiftLoggers as unknown as ShiftData[];
 }
 
 
