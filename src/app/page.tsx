@@ -85,7 +85,7 @@ export default async function Home() {
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
       {/* <UserButton afterSignOutUrl="/" /> */}
-      <UserInfo />
+      {/* <UserInfo /> */}
       <ShiftManager shifts={shiftLoggers} sites={data} />
       <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
       {/* <ShiftManager sites={data} /> */}

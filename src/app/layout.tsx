@@ -11,6 +11,7 @@ import db from '@/lib/utils/db';
 
 
 import { location } from '../../drizzle/schema';
+import UserInfo from './components/UserInfo';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -49,7 +50,7 @@ export default async function RootLayout({
         <body className={`bg-white ${inter.className}`}>
           <div className="flex flex-col justify-end ">
             <NavBar />
-
+            <UserInfo />
           </div>
           {/* <ShiftManager sites={data} /> */}
           {children}
