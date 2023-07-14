@@ -2,13 +2,13 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs';
-import { SignOutButton } from "@clerk/nextjs";
-import GoBack from './components/GoBack';
+
 import Link from 'next/link';
 import NavBar from './components/NavBar';
 import ClockIn from './components/ClockIn';
 import ShiftManager from './components/ShiftManager';
 import db from '@/lib/utils/db';
+
 
 import { location } from '../../drizzle/schema';
 
@@ -42,10 +42,15 @@ export default async function RootLayout({
 
   const data = await getLocationsDataDrizzle()
   return (
-    <ClerkProvider>
+    <ClerkProvider
+
+    >
       <html lang="en">
         <body className={`bg-white ${inter.className}`}>
-          {/* <NavBar /> */}
+          <div className="flex flex-col justify-end ">
+            <NavBar />
+
+          </div>
           {/* <ShiftManager sites={data} /> */}
           {children}
         </body>

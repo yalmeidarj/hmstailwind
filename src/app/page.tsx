@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { currentUser } from '@clerk/nextjs';
 import { getAuth, clerkClient } from "@clerk/nextjs/server";
-
+import { UserButton } from "@clerk/nextjs";
 
 import { eq, and } from "drizzle-orm";
 import { location, street, shiftLogger, worker, house } from '../../drizzle/schema';
@@ -12,6 +12,7 @@ import { Suspense } from 'react';
 import ShiftManager from './components/ShiftManager';
 import Loading from './components/Loading';
 import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
+import UserInfo from './components/UserInfo';
 // import LocationCard from './components/LocationCard';
 
 
@@ -83,6 +84,8 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
+      {/* <UserButton afterSignOutUrl="/" /> */}
+      <UserInfo />
       <ShiftManager shifts={shiftLoggers} sites={data} />
       <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
       {/* <ShiftManager sites={data} /> */}

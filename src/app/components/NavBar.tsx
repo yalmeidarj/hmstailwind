@@ -2,11 +2,14 @@
 import { useState, useEffect } from 'react';
 import { FaBars } from 'react-icons/fa';
 import Link from 'next/link';
-import UserInfo from './UserInfo';
+// import UserInfo from './UserInfo';
+// import { UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    // const userInfo = useState(<UserInfo />);
+
 
     useEffect(() => {
         setIsClient(true);
@@ -23,7 +26,7 @@ const Navbar = () => {
                     <span className="font-semibold text-xl tracking-tight cursor-pointer">TDX Solutions</span>
                 </Link>
             </div>
-            <UserInfo />
+            {/* <UserInfo /> */}
             <div className="lg:hidden">
                 <button onClick={toggleMenu} className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
                     <FaBars className="h-6 w-6" />
@@ -48,6 +51,8 @@ const Navbar = () => {
                     </Link>
                 </div>
             </div>
+            {/* <UserButton afterSignOutUrl="/" /> */}
+
         </nav>
     );
 }
