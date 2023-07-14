@@ -45,8 +45,8 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`bg-white ${inter.className}`}>
-          <NavBar />
-          <ShiftManager sites={data} />
+          {/* <NavBar /> */}
+          {/* <ShiftManager sites={data} /> */}
           {children}
         </body>
       </html>

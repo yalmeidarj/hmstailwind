@@ -10,7 +10,7 @@ import Radio from '@mui/material/Radio';
 import GoBack from "../GoBack";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import styles from "./styles.module.css";
+
 import { AiFillHome } from "react-icons/ai";
 import { FormLabel, Select } from "@mui/material";
 import MenuItem from '@mui/material/MenuItem';
@@ -57,12 +57,18 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
     const type = params.type;
     const streetNumber = params.streetNumber;
 
-
-
     const { isLoaded, isSignedIn, user } = useUser();
+    const shiftLoggerId = useState(user?.unsafeMetadata.ShiftLoggerId);
 
-    if (!isLoaded || !isSignedIn) {
-        return null;
+    const isClockedIn = user?.unsafeMetadata.isClockedIn
+
+    if (!isClockedIn) {
+        return (
+            <div className="flex flex-col border p-6 ">
+                <h1 className="text-black">You are not logged in</h1>
+                <h2 className="text-gray-500">Please, log into account to update Property details</h2>
+            </div>
+        );
     }
 
     // create handlesubmit function from react-hook-form
@@ -124,23 +130,11 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                 isActive: false,
                 finishedDate: DateTime.now().toJSDate(),
             })
-            console.log(loggerData)
-            // similar headers and body might be needed here and in the other fetch calls
-            // const shiftLoggerResponse = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${siteId}`, {
-            //     method: 'PUT',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ loggerData }), // modify this as necessary
-            // });
 
-            // if (!shiftLoggerResponse.ok) {
-            //     throw new Error('Network response was not ok');
-            // }
 
             const streetData = {
-                // lastVisited: DateTime.now().toJSDate(),
-                lastvisitedby: user?.fullName
+                lastVisited: DateTime.now().toJSDate(),
+                lastVisitedby: user?.fullName
             }
             console.log(streetData);
 
@@ -151,15 +145,17 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                 },
                 body: JSON.stringify(streetData),
             });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const userResponse = await fetch(`https://hmsapi.herokuapp.com/usersLastVisit/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
             if (!streetResponse.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`, {
+                method: 'PUT',
+
+            });
+            if (!shift.ok) {
                 throw new Error('Network response was not ok');
             }
 
@@ -172,7 +168,8 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
 
 
     return (
-        <div className={styles.container}>
+        // <div className={styles.container}>
+        <div className=''>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>

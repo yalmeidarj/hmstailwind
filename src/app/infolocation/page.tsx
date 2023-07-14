@@ -5,6 +5,19 @@ import { AiOutlineHome, AiOutlineUser, AiOutlineCheck, AiOutlineReload, AiOutlin
 
 
 async function getHousesDataFiltered(locationId: number) {
+
+	const locationIds = await db.select({
+		field1: location.id,
+	}).from(location);
+
+	// const allLocations = await db.select().from(location).whereIn(location.id, locationIds.map(id => id.field1));
+
+
+	// const allLocations = locationIds.map(property => ({
+	// 	...property,
+
+	// }));
+
 	const houses = await db.select().from(house).where(eq(house.locationId, locationId));
 	const locationInfo = await db.select().from(location).where(eq(location.id, locationId));
 	const allShiftLoggerWithDatesAsStrings = houses.map(house => ({

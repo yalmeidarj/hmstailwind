@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs';
 import { getAuth, clerkClient } from "@clerk/nextjs/server";
 
 
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { location, street, shiftLogger, worker, house } from '../../drizzle/schema';
 
 import db from '../lib/utils/db';
@@ -32,14 +32,33 @@ async function getNumberOfHouses(locationId: any) {
   const houses = await db.select().from(house).where(eq(house.locationId, locationId));
   return houses.length;
 }
+type ShiftData = {
+  locationId: number;
+  shiftLoggerId: number;
+  workerId: number;
+  startingDate: Date;
+  finishedDate: string | null;
+  updatedHouses: number | null;
+  updatedHousesFinal: number | null;
+  pace: number | null;
+  paceFinal: number | null;
+  userProviderUserId: string | null;
+  isActive: boolean | null;
+};
+
+async function getShiftLogger(workerId: any) {
+  const shiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.workerId, workerId)));
+  return shiftLoggers as ShiftData[];
+}
+
 
 async function getShiftLoggerData(locationId: any) {
-  const dshiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.locationId, locationId));
+  const dshiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.locationId, locationId)));
 
   const workers = await Promise.all(dshiftLoggers.map(async (logger) => {
     const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId));
     return (
-      // <div className="flex flex-row flex-wrap  justify-start items-center">
+
       <>
         {
           workers.map((worker, index) => (
@@ -51,18 +70,21 @@ async function getShiftLoggerData(locationId: any) {
       </>
     );
   }));
-
   return workers;
 }
 
 export default async function Home() {
   const data = await getLocationsDataDrizzle();
+  const user = await currentUser();
+
+  const shiftLoggers = await getShiftLogger(user?.unsafeMetadata.id);
+  // console.log(user?.privateMetadata.role);
 
 
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
+      <ShiftManager shifts={shiftLoggers} sites={data} />
       <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
-
       {/* <ShiftManager sites={data} /> */}
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.map((location) => (

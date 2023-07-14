@@ -2,17 +2,20 @@
 import React, { useState, useEffect, Key } from 'react';
 import { useUser } from "@clerk/nextjs";
 
-interface ClockOutProps {
-	userId: Key;
-}
+const ClockOut = () => {
 
-const ClockOut: React.FC<ClockOutProps> = ({ userId }) => {
 	const { isLoaded, isSignedIn, user } = useUser();
-	const [shiftData, setShiftData] = useState<{ workerId: number, isActive: boolean, finishedDate: string } | null>(null);
+	const [shiftLoggerId, setShiftLoggerId] = useState(user?.unsafeMetadata.ShiftLoggerId);
+	const ownId = user?.unsafeMetadata.id as number;
+	const [workerId, setWorkerId] = useState(ownId);
+	const [shiftData, setShiftData] = useState<{
+		workerId: number,
+		isActive: boolean,
+		finishedDate: string
+	} | null>(null);
 
 	useEffect(() => {
 		if (user) {
-			const workerId = user?.unsafeMetadata.id as number;
 			const isActive = false;
 			setShiftData({
 				workerId,
@@ -30,7 +33,7 @@ const ClockOut: React.FC<ClockOutProps> = ({ userId }) => {
 
 		try {
 			// const response = await fetch(`http://127.0.0.1:5000/clockout/${userId}`, {
-			const response = await fetch(`https://hmsapi.herokuapp.com/clockout/${shiftData?.workerId}`, {
+			const response = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${shiftLoggerId}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(shiftData),
