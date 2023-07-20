@@ -104,7 +104,14 @@ export default async function Home() {
 
 
   // calculate the pace
-  const userPace = pace.updatedHousesFinal / shiftDuration;
+  let userPace = 0;
+  if (pace?.updatedHousesFinal && shiftDuration > 0) {
+    userPace = pace.updatedHousesFinal / shiftDuration;
+  }
+
+  // convert the pace to a string with 2 decimal places
+  const userPaceString = userPace.toFixed(2);
+
 
 
 
