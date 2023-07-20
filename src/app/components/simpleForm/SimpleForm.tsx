@@ -76,7 +76,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         setName(params.name);
         setLastName(params.lastName);
         setStatusAttempt(params.statusAttempt);
-        setEmailOrPhone(params.emailOrPhone);
+        setPhoneOrEmail(params.emailOrPhone);
         setType(params.type);
         setStreetNumber(params.streetNumber);
         setNotes(params.notes);
