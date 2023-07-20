@@ -1,10 +1,9 @@
 "use client"
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useUser } from "@clerk/nextjs";
 import MenuItem from '@mui/material/MenuItem';
 import Select from "@mui/material/Select";
-import ClockIn from "./ClockIn";
-import { useUser } from "@clerk/nextjs";
-import ClockOut from "./ClockOut";
+import ClockOut from './ClockOut';
 
 interface Site {
 	id: number;
@@ -13,100 +12,88 @@ interface Site {
 	priorityStatus: number;
 }
 
-type ShiftData = {
-	locationId: number;
-	shiftLoggerId: number;
-	workerId: number;
-	startingDate: Date;
-	finishedDate: string | null;
-	updatedHouses: number | null;
-	updatedHousesFinal: number | null;
-	pace: number | null;
-	paceFinal: number | null;
-	userProviderUserId: string | null;
-	isActive: boolean | null;
-};
-
-
-interface SiteDropdownProps {
-	sites: Site[] | undefined;
-	shifts: ShiftData[];
+interface ShiftManagerProps {
+	sites: Site[];
 }
 
+const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
+	const { user } = useUser();
+	const [selectedSiteId, setSelectedSiteId] = useState<number>(0);
+	const [isClockedIn, setIsClockedIn] = useState(user?.unsafeMetadata.isClockedIn as boolean);
+	const [shiftId, setShiftId] = useState(user?.unsafeMetadata.shiftLoggerId as number);
+	const workerId = user?.unsafeMetadata.id as number;
 
-// const SiteDropdown: React.FC<SiteDropdownProps> = ({ sites }) => {
-const SiteDropdown: React.FC<SiteDropdownProps> = ({ sites, shifts }) => {
-	const [selectedSiteId, setSelectedSiteId] = useState<number | null>(null);
+	const handleSubmitClockIn = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		try {
+			const response = await fetch('https://hmsapi.herokuapp.com/shiftLogger', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					workerId: workerId,
+					locationId: selectedSiteId,
+					isActive: true,
+					startingDate: new Date().toISOString()
+				})
+			});
 
-	// Calculate average pace based on starting date and current date
-	const calculateAveragePace = (): string => {
-		const currentDate = new Date();
-		const activeShifts = shifts.filter((shift) => shift.startingDate !== null);
 
-		if (activeShifts.length === 0) {
-			return "0:00:00";
+			const responseData = await response.json();
+			const shifLoggerId = responseData.ShiftLoggerId;
+			const updateUser = user?.update({
+				unsafeMetadata: { "id": workerId, "isClockedIn": true, "shiftLoggerId": shifLoggerId }
+			});
+
+			alert("Successfully clocked in.");
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+		} catch (error) {
+			alert("Failed to clock in. Please try again.");
+			console.log(`Failed to create a shift log due to ${error}`);
+			console.log(user?.unsafeMetadata.id);
+			console.log(selectedSiteId);
+			console.error(error);
 		}
-
-		const totalDiff = activeShifts.reduce((total, shift) => {
-			const startingDate = new Date(shift.startingDate!);
-			const diffInSeconds = Math.floor((currentDate.getTime() - startingDate.getTime()) / 1000);
-			return total + diffInSeconds;
-		}, 0);
-
-		const averageDiffInSeconds = totalDiff / activeShifts.length;
-
-		// Calculate hours, minutes, and seconds
-		const hours = Math.floor(averageDiffInSeconds / 3600);
-		const minutes = Math.floor((averageDiffInSeconds % 3600) / 60);
-		const seconds = Math.floor(averageDiffInSeconds % 60);
-
-		// Format the result as "HH:MM:SS"
-		const formattedDiff = `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-		return formattedDiff;
 	};
 
-
-
-
-
-	const averagePace = calculateAveragePace();
-
-	const [pace, setPace] = useState(averagePace);
-
-	const { user } = useUser();
-	const workerId = user?.unsafeMetadata.id as number
-
-	if (user?.unsafeMetadata.isClockedIn) {
-		return (
-			<div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto p-4 rounded-md bg-gray-100">
-				<ClockOut />
-				<h1 className="text-black">Pace: {pace}</h1>
-			</div>
-		)
-	}
+	useEffect(() => {
+		setIsClockedIn(user?.unsafeMetadata.isClockedIn as boolean);
+		setSelectedSiteId
+	}, [isClockedIn]);
 
 	return (
-		<div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto p-4 rounded-md bg-white shadow">
-			<Select
-				value={selectedSiteId}
-				onChange={(event: { target: { value: any; }; }) => setSelectedSiteId(Number(event.target.value))}
-				className="w-full text-gray-700 bg-gray-200 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500"
-			>
-				{sites && sites.map((site) => (
-					<MenuItem key={site.id} value={site.id} className="px-4 py-2 hover:bg-gray-200">
-						{site.name}
-					</MenuItem>
-				))}
-
-			</Select>
-
-			<ClockIn siteId={selectedSiteId} />
+		<div className="flex flex-col items-center space-y-4">
+			{user?.unsafeMetadata.isClockedIn ? (
+				<div>
+					<h1 className='text-black'>Already Clocked In</h1>
+					<ClockOut shiftId={shiftId} />
+				</div>
+			) : (
+				<div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto p-4 rounded-md bg-white shadow">
+					<Select
+						value={selectedSiteId}
+						onChange={({ target: { value } }) => setSelectedSiteId(Number(value))}
+						className="w-full text-gray-700 bg-gray-200 rounded-md border border-gray-200 focus:outline-none focus:border-blue-500"
+					>
+						{sites?.map((site) => (
+							<MenuItem key={site.id} value={site.id}>
+								{site.name}
+							</MenuItem>
+						))}
+					</Select>
+					<form onSubmit={handleSubmitClockIn} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+						<button type="submit" className="w-full">
+							Clock In
+						</button>
+					</form>
+				</div>
+			)}
 		</div>
 	);
 };
 
-export default SiteDropdown;
-
-
+export default ShiftManager;
 

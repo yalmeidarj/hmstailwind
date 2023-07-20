@@ -8,8 +8,12 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import GoBack from "../GoBack";
+import { experimental_useOptimistic as useOptimistic } from 'react'
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+// import {APIRequest} from "../../api-request";
+import { SignedIn, ClerkProvider, ClerkLoaded, SignedOut, useClerk } from "@clerk/nextjs";
+// import fetch from "node-fetch";
 
 import { AiFillHome } from "react-icons/ai";
 import { FormLabel, Select } from "@mui/material";
@@ -17,11 +21,28 @@ import MenuItem from '@mui/material/MenuItem';
 import { useRouter } from 'next/navigation'
 import { useAuth, useUser } from "@clerk/nextjs";
 import { DateTime } from "luxon";
+import { updateHouseDetail } from "../actions";
+import { data } from "autoprefixer";
 
+// Define the prop types
+interface SimpleFormProps {
+    params: {
+        id: string,
+        streetId: string,
+        name: string,
+        lastName: string,
+        statusAttempt: string,
+        emailOrPhone: string,
+        notes: string,
+        type: string,
+        streetNumber: string,
+    }
+}
+
+// Define your form input interface
 interface MyIFormInput {
     id: string | number;
     type: string;
-
     lastName: string;
     name: string;
     statusAttempt: string;
@@ -32,52 +53,47 @@ interface MyIFormInput {
     lastUpdatedBy: string;
 }
 
-interface ParamType {
-    id: {
-        house: string;
-        street: string;
-        name: string;
-        lastName: string;
-        statusAttempt: string;
-        emailOrPhone: string;
-        notes: string;
-        type: string;
-        streetNumber: string;
-    }
-}
-
-const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: string, lastName: string, statusAttempt: string, emailOrPhone: string, notes: string, type: string, streetNumber: string } }) => {
-    const houseId = params.id;
-    const streetId = params.streetId;
-    const name = params.name;
-    const lastName = params.lastName;
-    const statusAttempt = params.statusAttempt;
-    const emailOrPhone = params.emailOrPhone;
-    const notes = params.notes;
-    const type = params.type;
-    const streetNumber = params.streetNumber;
+const SimpleForm = ({ params }: SimpleFormProps) => {
+    // Define your states
+    const [houseId, setHouseId] = useState(params.id);
+    const [streetId, setStreetId] = useState(params.streetId);
+    const [name, setName] = useState(params.name);
+    const [lastName, setLastName] = useState(params.lastName);
+    const [statusAttempt, setStatusAttempt] = useState(params.statusAttempt);
+    const [emailOrPhone, setEmailOrPhone] = useState(params.emailOrPhone);
+    const [type, setType] = useState(params.type);
+    const [streetNumber, setStreetNumber] = useState(params.streetNumber);
+    const [notes, setNotes] = useState(params.notes);
 
     const { isLoaded, isSignedIn, user } = useUser();
-    const shiftLoggerId = useState(user?.unsafeMetadata.ShiftLoggerId);
 
-    const isClockedIn = user?.unsafeMetadata.isClockedIn
+    // Use useEffect to update state when 'params' changes
+    useEffect(() => {
+        setHouseId(params.id);
+        setStreetId(params.streetId);
+        setName(params.name);
+        setLastName(params.lastName);
+        setStatusAttempt(params.statusAttempt);
+        setEmailOrPhone(params.emailOrPhone);
+        setType(params.type);
+        setStreetNumber(params.streetNumber);
+        setNotes(params.notes);
+    }, [params]);
 
-    if (!isClockedIn) {
+
+    const { handleSubmit, control, formState: { errors } } = useForm<MyIFormInput>();
+
+    if (!isLoaded || !isSignedIn) {
+
         return (
             <div className="flex flex-col border p-6 ">
-                <h1 className="text-black">You are not logged in</h1>
-                <h2 className="text-gray-500">Please, log into account to update Property details</h2>
+                <h1 className="text-black">You are not clocked in</h1>
+                <h2 className="text-gray-500">Please, clock in to update Property details</h2>
             </div>
         );
     }
 
-    // create handlesubmit function from react-hook-form
-    const { handleSubmit, control, formState: { errors } } = useForm<MyIFormInput>();
-
     const router = useRouter();
-
-
-
 
     const handleHouseStreetUpdate: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
         try {
@@ -98,16 +114,24 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
     }
 
 
-    const [siteId, setSiteId] = useState(user.unsafeMetadata.ShiftLoggerId);
-    const [loggerData, setLoggerData] = useState({
-        isActive: false,
-        finishedDate: DateTime.now().toJSDate(),
-    });
-    const id = user.unsafeMetadata.id;
+    // const [siteId, setSiteId] = useState(user.unsafeMetadata.ShiftLoggerId);
+    // const [loggerData, setLoggerData] = useState({
+    //     isActive: true,
+    //     finishedDate: DateTime.now().toJSDate(),
+    // });
+
+    // const id = user.unsafeMetadata.id;
     const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
         data.lastUpdatedBy = user.fullName || "Unknown";
         data.lastUpdated = DateTime.now().toJSDate();
-        setSiteId(user.unsafeMetadata.ShiftLoggerId);
+        data.name = name;
+        data.lastName = lastName;
+        data.statusAttempt = statusAttempt;
+        data.phoneOrEmail = emailOrPhone;
+        data.type = type;
+        data.notes = notes;
+
+        // setSiteId(user.unsafeMetadata.ShiftLoggerId);
 
         // if ({
         //     data.statusAttempt == 'consent final no'
@@ -126,10 +150,10 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                 throw new Error('Network response was not ok');
             }
 
-            setLoggerData({
-                isActive: false,
-                finishedDate: DateTime.now().toJSDate(),
-            })
+            // setLoggerData({
+            //     isActive: false,
+            //     finishedDate: DateTime.now().toJSDate(),
+            // })
 
 
             const streetData = {
@@ -151,13 +175,13 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
 
             // await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`, {
-                method: 'PUT',
+            // const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`, {
+            //     method: 'PUT',
 
-            });
-            if (!shift.ok) {
-                throw new Error('Network response was not ok');
-            }
+            // });
+            // if (!shift.ok) {
+            //     throw new Error('Network response was not ok');
+            // }
 
         } catch (error) {
             console.error(error);
@@ -166,10 +190,15 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
         router.push(`/locations/streets/${streetId}`)
     };
 
+    // const onSubmit: SubmitHandler<MyIFormInput> = async (data: MyIFormInput) => {
+    //     console.log(JSON.stringify(data))
+    //     updateHouseDetail(JSON.stringify(data), houseId);
+    // }
 
     return (
         // <div className={styles.container}>
         <div className=''>
+            {/* <APIRequest /> */}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -183,6 +212,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                                     sx={{
                                         color: "#000",
                                     }}
+                                    onChange={(e) => setType(e.target.value)}
                                     row>
                                     <FormControlLabel value="Easy" control={<Radio />} label="Easy" />
                                     <FormControlLabel value="Moderate" control={<Radio />} label="Moderate" />
@@ -200,7 +230,8 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                                 <Select
                                     {...field}
                                     fullWidth
-                                    onChange={(e) => field.onChange(e.target.value)} // Add onChange event handler
+
+                                    onChange={(e) => setStatusAttempt(e.target.value)}
                                 >
                                     <MenuItem value={"1st attempt"}>1st Attempt</MenuItem>
                                     <MenuItem value={"2nd attempt"}>2nd Attempt</MenuItem>
@@ -220,7 +251,8 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                         <Controller
                             name="lastName"
                             control={control}
-                            render={({ field }) => <TextField {...field} label="Last Name" fullWidth />}
+
+                            render={({ field }) => <TextField {...field} onChange={e => setLastName(e.target.value)} label="Last Name" fullWidth />}
                         />
                         {errors.lastName && <Alert severity="error">{errors.lastName.message}</Alert>}
                     </Grid>
@@ -228,7 +260,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                         <Controller
                             name="name"
                             control={control}
-                            render={({ field }) => <TextField {...field} label="Name" fullWidth />}
+                            render={({ field }) => <TextField {...field} onChange={e => setName(e.target.value)} label="Name" fullWidth />}
                         />
                         {errors.name && <Alert severity="error">{errors.name.message}</Alert>}
                     </Grid>
@@ -236,7 +268,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                         <Controller
                             name="phoneOrEmail"
                             control={control}
-                            render={({ field }) => <TextField {...field} label="Email" fullWidth />}
+                            render={({ field }) => <TextField {...field} onChange={e => setEmailOrPhone(e.target.value)} label="Email" fullWidth />}
                         />
                         {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
                     </Grid>
@@ -244,7 +276,7 @@ const SimpleForm = ({ params }: { params: { id: string, streetId: string, name: 
                         <Controller
                             name="notes"
                             control={control}
-                            render={({ field }) => <TextField {...field} label="Notes" fullWidth multiline />}
+                            render={({ field }) => <TextField {...field} onChange={e => setNotes(e.target.value)} label="Notes" fullWidth multiline />}
                         />
                         {errors.notes && <Alert severity="error">{errors.notes.message}</Alert>}
                     </Grid>

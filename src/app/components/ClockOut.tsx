@@ -1,68 +1,51 @@
 "use client"
-import React, { useState, useEffect, Key } from 'react';
+import React from 'react';
 import { useUser } from "@clerk/nextjs";
 
-const ClockOut = () => {
+interface ClockOutProps {
+	shiftId: number;
+}
 
-	const { isLoaded, isSignedIn, user } = useUser();
-	const [shiftLoggerId, setShiftLoggerId] = useState(user?.unsafeMetadata.ShiftLoggerId);
-	const ownId = user?.unsafeMetadata.id as number;
-	const [workerId, setWorkerId] = useState(ownId);
-	const [shiftData, setShiftData] = useState<{
-		workerId: number,
-		isActive: boolean,
-		finishedDate: string
-	} | null>(null);
+const ClockOut: React.FC<ClockOutProps> = ({ shiftId }) => {
+	const { user } = useUser();
+	const id = user?.unsafeMetadata.shiftLoggerId as number;
+	const workerId = user?.unsafeMetadata.id as number;
 
-	useEffect(() => {
-		if (user) {
-			const isActive = false;
-			setShiftData({
-				workerId,
-				isActive,
-				finishedDate: new Date().toISOString(),
-			});
-		}
-	}, [user]);
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		console.log(shiftData)
-		console.log(shiftData?.workerId)
-
+	const handleClockOut = async () => {
+		const data = {
+			isActive: false,
+			finishedDate: new Date().toISOString()
+		};
 		try {
-			// const response = await fetch(`http://127.0.0.1:5000/clockout/${userId}`, {
-			const response = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${shiftLoggerId}`, {
+			const response = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${id}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(shiftData),
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data),
 			});
-			const responseData = await response.json();
-			if (!response.ok) {
-				throw new Error(responseData.error || 'PUT request failed');
-			}
 
-			const updateResponse = user?.update({
-				unsafeMetadata: { "id": shiftData?.workerId, "isClockedIn": false }
-			});
-			if (updateResponse) {
-				console.log('Updated user unsafeMetadata', updateResponse);
+			if (response.ok) {
+				user?.update({
+					unsafeMetadata: { "id": workerId, "isClockedIn": false, "shiftLoggerId": null }
+				});
+				alert('Successfully clocked out.');
+			} else {
+				const statusText = await response.text();
+				throw new Error(`HTTP error! status: ${statusText}`);
 			}
 		} catch (error) {
-			// console.error(`Error occurred: ${error.message}, Details: ${error.details}`);
-			console.error(`Error occurred: ${error}`);
+			alert("Failed to clock out. Please try again.");
+			console.error(`Failed to update a shift log due to ${error.message}`);
+			console.log(user?.unsafeMetadata.id);
+			console.error(error);
 		}
 	};
 
 	return (
-		<div className="flex flex-col items-center">
-			<form onSubmit={handleSubmit}>
-				<button type="submit" className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-					Clock Out
-				</button>
-			</form>
-		</div>
+		<button onClick={handleClockOut} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
+			Clock Out
+		</button>
 	);
 };
 

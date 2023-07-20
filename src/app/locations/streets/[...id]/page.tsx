@@ -13,9 +13,9 @@ import db from '../../../../lib/utils/db';
 async function getAllStreetNumbersOfStreet(streetId: any) {
     // Use the drizzle-orm to get the data from the database
     const idNumber = parseInt(streetId);
-    const streetNumbers = await db.select().from(house).where(eq(house.streetId, idNumber));
+    const streetNumbers = await db.select().from(house).where(eq(house.streetId, idNumber)).execute();
 
-    const previousStreet = await db.select().from(street).where(eq(street.id, idNumber));
+    const previousStreet = await db.select().from(street).where(eq(street.id, idNumber)).execute();
 
     return { streetNumbers, previousStreet };
 

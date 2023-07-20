@@ -1,323 +1,9 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
   "version": "5",
   "dialect": "pg",
+  "id": "2e9502a1-15ab-4821-af26-926a173ffafb",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "_prisma_migrations": {
-      "name": "_prisma_migrations",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(36)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "checksum": {
-          "name": "checksum",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "finished_at": {
-          "name": "finished_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "migration_name": {
-          "name": "migration_name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "logs": {
-          "name": "logs",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "rolled_back_at": {
-          "name": "rolled_back_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "started_at": {
-          "name": "started_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "applied_steps_count": {
-          "name": "applied_steps_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
-    "Location": {
-      "name": "Location",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "neighborhood": {
-          "name": "neighborhood",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'to be verified'"
-        },
-        "priorityStatus": {
-          "name": "priorityStatus",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
-    "Worker": {
-      "name": "Worker",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "userName": {
-          "name": "userName",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "providerUserId": {
-          "name": "providerUserId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "role": {
-          "name": "role",
-          "type": "varchar(15)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "Worker_providerUserId_key": {
-          "name": "Worker_providerUserId_key",
-          "columns": [
-            "providerUserId"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
-    "Street": {
-      "name": "Street",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "locationId": {
-          "name": "locationId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "lastVisited": {
-          "name": "lastVisited",
-          "type": "timestamp(3)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "lastVisitedby": {
-          "name": "lastVisitedby",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "Street_locationId_fkey": {
-          "name": "Street_locationId_fkey",
-          "tableFrom": "Street",
-          "tableTo": "Location",
-          "columnsFrom": [
-            "locationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "cascade"
-        }
-      },
-      "compositePrimaryKeys": {}
-    },
-    "ShiftLogger": {
-      "name": "ShiftLogger",
-      "schema": "",
-      "columns": {
-        "ShiftLoggerId": {
-          "name": "ShiftLoggerId",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "workerId": {
-          "name": "workerId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "locationId": {
-          "name": "locationId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "startingDate": {
-          "name": "startingDate",
-          "type": "timestamp(3)",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "finishedDate": {
-          "name": "finishedDate",
-          "type": "timestamp(3)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "updatedHouses": {
-          "name": "updatedHouses",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updatedHousesFinal": {
-          "name": "updatedHousesFinal",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "pace": {
-          "name": "pace",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "paceFinal": {
-          "name": "paceFinal",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "userProviderUserId": {
-          "name": "userProviderUserId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "ShiftLogger_workerId_locationId_key": {
-          "name": "ShiftLogger_workerId_locationId_key",
-          "columns": [
-            "workerId",
-            "locationId"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "ShiftLogger_locationId_fkey": {
-          "name": "ShiftLogger_locationId_fkey",
-          "tableFrom": "ShiftLogger",
-          "tableTo": "Location",
-          "columnsFrom": [
-            "locationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "cascade"
-        },
-        "ShiftLogger_workerId_fkey": {
-          "name": "ShiftLogger_workerId_fkey",
-          "tableFrom": "ShiftLogger",
-          "tableTo": "Worker",
-          "columnsFrom": [
-            "workerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "cascade"
-        }
-      },
-      "compositePrimaryKeys": {}
-    },
     "House": {
       "name": "House",
       "schema": "",
@@ -381,7 +67,7 @@
           "type": "timestamp(3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "now()"
         },
         "lastUpdatedBy": {
           "name": "lastUpdatedBy",
@@ -404,21 +90,8 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "House_locationId_fkey": {
-          "name": "House_locationId_fkey",
-          "tableFrom": "House",
-          "tableTo": "Location",
-          "columnsFrom": [
-            "locationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "cascade"
-        },
-        "House_streetId_fkey": {
-          "name": "House_streetId_fkey",
+        "House_streetId_Street_id_fk": {
+          "name": "House_streetId_Street_id_fk",
           "tableFrom": "House",
           "tableTo": "Street",
           "columnsFrom": [
@@ -429,9 +102,338 @@
           ],
           "onDelete": "restrict",
           "onUpdate": "cascade"
+        },
+        "House_locationId_Location_id_fk": {
+          "name": "House_locationId_Location_id_fk",
+          "tableFrom": "House",
+          "tableTo": "Location",
+          "columnsFrom": [
+            "locationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
         }
       },
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Location": {
+      "name": "Location",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "neighborhood": {
+          "name": "neighborhood",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'to be verified'"
+        },
+        "priorityStatus": {
+          "name": "priorityStatus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "_prisma_migrations": {
+      "name": "_prisma_migrations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "checksum": {
+          "name": "checksum",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "migration_name": {
+          "name": "migration_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logs": {
+          "name": "logs",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rolled_back_at": {
+          "name": "rolled_back_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "applied_steps_count": {
+          "name": "applied_steps_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "ShiftLogger": {
+      "name": "ShiftLogger",
+      "schema": "",
+      "columns": {
+        "ShiftLoggerId": {
+          "name": "ShiftLoggerId",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "workerId": {
+          "name": "workerId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locationId": {
+          "name": "locationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startingDate": {
+          "name": "startingDate",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finishedDate": {
+          "name": "finishedDate",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedHouses": {
+          "name": "updatedHouses",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedHousesFinal": {
+          "name": "updatedHousesFinal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pace": {
+          "name": "pace",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "paceFinal": {
+          "name": "paceFinal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userProviderUserId": {
+          "name": "userProviderUserId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ShiftLogger_workerId_Worker_id_fk": {
+          "name": "ShiftLogger_workerId_Worker_id_fk",
+          "tableFrom": "ShiftLogger",
+          "tableTo": "Worker",
+          "columnsFrom": [
+            "workerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "ShiftLogger_locationId_Location_id_fk": {
+          "name": "ShiftLogger_locationId_Location_id_fk",
+          "tableFrom": "ShiftLogger",
+          "tableTo": "Location",
+          "columnsFrom": [
+            "locationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Street": {
+      "name": "Street",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locationId": {
+          "name": "locationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastVisited": {
+          "name": "lastVisited",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "lastVisitedby": {
+          "name": "lastVisitedby",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Street_locationId_Location_id_fk": {
+          "name": "Street_locationId_Location_id_fk",
+          "tableFrom": "Street",
+          "tableTo": "Location",
+          "columnsFrom": [
+            "locationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Worker": {
+      "name": "Worker",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userName": {
+          "name": "userName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "providerUserId": {
+          "name": "providerUserId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "Worker_providerUserId_key": {
+          "name": "Worker_providerUserId_key",
+          "columns": [
+            "providerUserId"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {},

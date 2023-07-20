@@ -1,8 +1,8 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs';
-
+import Image from 'next/image'
 import Link from 'next/link';
 import NavBar from './components/NavBar';
 import ClockIn from './components/ClockIn';
@@ -21,12 +21,6 @@ export const metadata = {
 }
 
 
-const getUserPace = async () => {
-  const res = await fetch('http://localhost:9000/userspace')
-  const data = await res.json()
-  console.log(data)
-  return data
-}
 
 async function getLocationsDataDrizzle() {
   // Use the drizzle-orm to get the data from the database
@@ -34,28 +28,49 @@ async function getLocationsDataDrizzle() {
   return locations;
 }
 
+const Header = () => (
+  <header className="flex justify-between px-4 py-2 md:px-8">
+    <div className="flex items-center">
+      <Link href="/">
+        <div className="flex items-center cursor-pointer">
+          <Image src="/logo.svg" width="32" height="32" alt="Logo" />
+          <span className="ml-3 font-bold text-blue-600">TDX Solutions</span>
+        </div>
+      </Link>
+    </div>
+    <div className="text-black">
+      <SignedOut>
+        <Link className="text-black" href="/sign-in">Sign in</Link>
+      </SignedOut>
+      <SignedIn>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
+    </div>
+  </header>
+)
+
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { userId } = auth();
+  // const { userId } = auth();
 
   const data = await getLocationsDataDrizzle()
   return (
-    <ClerkProvider
-
-    >
-      <html lang="en">
+    <html lang="en">
+      <head></head>
+      <ClerkProvider>
         <body className={`bg-white ${inter.className}`}>
           <div className="flex flex-col justify-end ">
-            <NavBar />
-            <UserInfo />
+            {/* <NavBar /> */}
+            <Header />
           </div>
-          {/* <ShiftManager sites={data} /> */}
+          <ShiftManager sites={data} />
           {children}
         </body>
-      </html>
-    </ClerkProvider>
+      </ClerkProvider>
+    </html>
   )
 }

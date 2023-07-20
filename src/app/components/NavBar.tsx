@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { FaBars } from 'react-icons/fa';
 import Link from 'next/link';
+import { SignedIn, SignedOut } from '@clerk/nextjs'
 // import UserInfo from './UserInfo';
-// import { UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const { isLoaded, userId, sessionId, getToken } = useAuth();
     // const userInfo = useState(<UserInfo />);
 
 
@@ -51,7 +54,6 @@ const Navbar = () => {
                     </Link>
                 </div>
             </div>
-            {/* <UserButton afterSignOutUrl="/" /> */}
 
         </nav>
     );

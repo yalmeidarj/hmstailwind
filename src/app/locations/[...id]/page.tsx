@@ -11,7 +11,7 @@ import { location, street, house } from "../../../../drizzle/schema";
 async function getLocations(id: string) {
 
     const idNumber = parseInt(id);
-    const locations = await db.select().from(location).where(eq(location.id, idNumber));
+    const locations = await db.select().from(location).where(eq(location.id, idNumber)).execute();
 
     return locations[0];
 }
@@ -19,13 +19,13 @@ async function getLocations(id: string) {
 async function getStreetsByLocation(id: string) {
 
     const idNumber = parseInt(id);
-    const streets = await db.select().from(street).where(eq(street.locationId, idNumber));
+    const streets = await db.select().from(street).where(eq(street.locationId, idNumber)).execute();
     return streets;
 }
 
 async function getNumberOfHouses(streetId: any) {
     // Use drizzle-orm to get the number of streets for each location
-    const houses = await db.select().from(house).where(eq(house.streetId, streetId));
+    const houses = await db.select().from(house).where(eq(house.streetId, streetId)).execute();
     return houses.length;
 }
 
