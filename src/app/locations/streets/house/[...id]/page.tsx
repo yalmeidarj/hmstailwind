@@ -82,7 +82,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                 name: house.name || " ",
                                 lastName: house.lastName || " ",
                                 statusAttempt: house.statusAttempt || " ",
-                                phoneOrEmail: house.emailOrPhone || " ",
+                                phoneOrEmail: house.phoneOrEmail || " ",
                                 notes: house.notes || " ",
                                 type: house.type || " ",
                                 streetNumber: house.streetNumber
