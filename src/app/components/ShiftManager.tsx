@@ -17,9 +17,9 @@ interface ShiftManagerProps {
 }
 
 const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
-	const { user } = useUser();
+	const { isLoaded, isSignedIn, user } = useUser();
 	const [selectedSiteId, setSelectedSiteId] = useState<number>(0);
-	const [isClockedIn, setIsClockedIn] = useState(user?.unsafeMetadata.isClockedIn as boolean);
+	const isClockedIn = user?.unsafeMetadata.isClockedIn as boolean;
 	const [shiftId, setShiftId] = useState(user?.unsafeMetadata.shiftLoggerId as number);
 	const workerId = user?.unsafeMetadata.id as number;
 
@@ -60,9 +60,14 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 	};
 
 	useEffect(() => {
-		setIsClockedIn(user?.unsafeMetadata.isClockedIn as boolean);
+		// setIsClockedIn(user?.unsafeMetadata.isClockedIn as boolean);
 		setSelectedSiteId
 	}, [isClockedIn]);
+
+	if (!isLoaded || !isSignedIn) {
+		return null;
+	}
+
 
 	return (
 		<div className="flex flex-col items-center space-y-4">
