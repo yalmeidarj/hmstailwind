@@ -36,9 +36,8 @@ const ClockOut: React.FC<ClockOutProps> = ({ shiftId }) => {
 			}
 		} catch (error) {
 			alert("Failed to clock out. Please try again.");
-			console.error(`Failed to update a shift log due to ${error.message}`);
-			console.log(user?.unsafeMetadata.id);
-			console.error(error);
+			console.error(`Failed to update a shift log due to ${error}`);
+
 		}
 	};
 
