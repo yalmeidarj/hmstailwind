@@ -6,16 +6,17 @@ import SimpleForm from '../../../../components/simpleForm/SimpleForm'
 import { AiFillHome } from 'react-icons/ai';
 import { Suspense } from 'react';
 import Link from 'next/link';
-
-
+import db from '../../../../../lib/utils/db';
+import { house } from '../../../../../../drizzle/schema';
+import { eq } from "drizzle-orm";
 
 
 // const prisma = new PrismaClient()
 async function getHouse(id: string) {
 
-    const res = await fetch(`https://hmsapi.herokuapp.com/property/${id}`, { next: { revalidate: 60 } })
-    const house = await res.json()
-    return house
+    const houseId = parseInt(id);
+    const houseData = await db.select().from(house).where(eq(house.id, houseId));
+    return houseData[0]
 
 }
 
