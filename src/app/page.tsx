@@ -26,6 +26,7 @@ async function getNumberOfStreets(locationId: any) {
   return streets.length;
 
 }
+
 async function getNumberOfHouses(locationId: any) {
   // Use drizzle-orm to get the number of streets for each location
   const houses = await db.select().from(house).where(eq(house.locationId, locationId)).execute();
@@ -50,6 +51,13 @@ async function getShiftLogger(workerId: any) {
   // const id = await 
   const shiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.workerId, 2)));
   return shiftLoggers as unknown as ShiftData[];
+}
+
+async function getPaceFinal(shiftLoggerId: any) {
+
+  const shift = await db.select().from(shiftLogger).where(eq(shiftLogger.shiftLoggerId, shiftLoggerId)).execute();
+  const pace = shift[0]
+  return pace
 }
 
 
@@ -82,20 +90,33 @@ export default async function Home() {
   const { userId } = auth();
   const user = await currentUser();
   const id = user?.publicMetadata.id as number;
+  const currentShift = user?.unsafeMetadata.shiftLoggerId as number;
 
 
 
   const shiftLoggers = await getShiftLogger(id);
   // console.log(user?.privateMetadata.role);
 
+  const pace = await getPaceFinal(currentShift)
+  // calculate the duration of the shift in hours
+  const shiftDuration = (pace.startingDate - new Date().getTime()) / 1000 / 60 / 60;
+
+  // calculate the pace
+  const userPace = pace.updatedHousesFinal / shiftDuration;
+
+
+
   if (!user) return <div className="text-blue-900">Not logged in</div>;
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
       <h1 className="text-blue-900">
-        {/* {user.firstName}
-        {userId} */}
-        {/* {user.unsafeMetadata.id} */}
-        {/* {} */}
+        Houses updated: {pace.updatedHousesFinal}
+      </h1>
+      <h1 className="text-blue-900">
+        Start Time: {pace.startingDate.toString()}
+      </h1>
+      <h1 className="text-blue-900">
+        Pace: {userPace}
       </h1>
 
       {/* <ShiftManager shifts={shiftLoggers} sites={data} /> */}

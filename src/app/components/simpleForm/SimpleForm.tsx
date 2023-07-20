@@ -67,6 +67,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
 
+    const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
+
     // Use useEffect to update state when 'params' changes
     useEffect(() => {
         setHouseId(params.id);
@@ -150,6 +152,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                 throw new Error('Network response was not ok');
             }
 
+
+
             // setLoggerData({
             //     isActive: false,
             //     finishedDate: DateTime.now().toJSDate(),
@@ -175,13 +179,16 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
 
             // await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`, {
-            //     method: 'PUT',
-
-            // });
-            // if (!shift.ok) {
-            //     throw new Error('Network response was not ok');
-            // }
+            const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`, {
+                method: 'PUT',
+                // headers: {
+                //     'Content-Type': 'application/json',
+                // },
+                // body: JSON.stringify(updatedhousesData),
+            });
+            if (!shift.ok) {
+                throw new Error('Network response was not ok');
+            }
 
         } catch (error) {
             console.error(error);

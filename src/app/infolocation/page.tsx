@@ -5,32 +5,20 @@ import { AiOutlineHome, AiOutlineUser, AiOutlineCheck, AiOutlineReload, AiOutlin
 
 
 async function getHousesDataFiltered(locationId: number) {
+	const houses = await db.select().from(house).where(eq(house.locationId, locationId)).execute();
+	const locationInfo = await db.select().from(location).where(eq(location.id, locationId)).execute();
 
-	const locationIds = await db.select({
-		field1: location.id,
-	}).from(location);
-
-	// const allLocations = await db.select().from(location).whereIn(location.id, locationIds.map(id => id.field1));
-
-
-	// const allLocations = locationIds.map(property => ({
-	// 	...property,
-
-	// }));
-
-	const houses = await db.select().from(house).where(eq(house.locationId, locationId));
-	const locationInfo = await db.select().from(location).where(eq(location.id, locationId));
-	const allShiftLoggerWithDatesAsStrings = houses.map(house => ({
+	const allHousesWithDatesAsStrings = houses.map(house => ({
 		...house,
 		lastUpdated: house.lastUpdated ? new Date(house.lastUpdated).toISOString() : null,
 	}));
 
-	const totalHouses = allShiftLoggerWithDatesAsStrings.length;
-	const visitedHouses = allShiftLoggerWithDatesAsStrings.filter(house => house.lastUpdated !== null).length;
-	const consentFinalYes = allShiftLoggerWithDatesAsStrings.filter(house => house.statusAttempt === 'consent final yes');
-	const secondAttempt = allShiftLoggerWithDatesAsStrings.filter(house => house.statusAttempt === '2nd attempt');
+	const totalHouses = allHousesWithDatesAsStrings.length;
+	const visitedHouses = allHousesWithDatesAsStrings.filter(house => house.lastUpdated !== null).length;
+	const consentFinalYes = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'consent final yes');
+	const secondAttempt = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === '2nd attempt');
 
-	const nonExistent = allShiftLoggerWithDatesAsStrings.filter(house =>
+	const nonExistent = allHousesWithDatesAsStrings.filter(house =>
 		house.name === null &&
 		house.locationId === null &&
 		house.streetNumber === null &&
@@ -45,7 +33,7 @@ async function getHousesDataFiltered(locationId: number) {
 	).length;
 
 	return {
-		allShiftLoggerWithDatesAsStrings,
+		allHousesWithDatesAsStrings,
 		totalHouses,
 		visitedHouses,
 		consentFinalYes,
@@ -55,65 +43,62 @@ async function getHousesDataFiltered(locationId: number) {
 	};
 }
 
-export default async function page() {
-	const housesData = await getHousesDataFiltered(1);
-	return (
-		<div className="p-8 bg-gray-100 rounded-lg space-y-8">
-			<h1 className="text-3xl font-semibold text-gray-700 mb-4">
-				Location: <span className="font-normal text-blue-600">{housesData?.locationInfo[0]?.name}</span>
-			</h1>
 
-			<div className="grid grid-cols-2 gap-4">
-				<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
-					<AiOutlineHome className="text-blue-600" />
-					<div className="text-gray-700">Total Houses: <span className="font-semibold">{housesData?.totalHouses}</span></div>
-				</div>
+async function getAllLocationData() {
+	const locations = await db.select().from(location).execute();
+	const locationsData = [];
 
-				<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
-					<AiOutlineUser className="text-blue-600" />
-					<div className="text-gray-700">Visited Houses: <span className="font-semibold">{housesData?.visitedHouses}</span></div>
-				</div>
+	for (let i = 0; i < locations.length; i++) {
+		const locationData = await getHousesDataFiltered(locations[i].id);
+		locationsData.push(locationData);
+	}
 
-				<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
-					<AiOutlineCheck className="text-blue-600" />
-					<div className="text-gray-700">Consent Final Yes: <span className="font-semibold">{housesData?.consentFinalYes?.length}</span></div>
-				</div>
-
-				<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
-					<AiOutlineReload className="text-blue-600" />
-					<div className="text-gray-700">2nd Attempt: <span className="font-semibold">{housesData?.secondAttempt?.length}</span></div>
-				</div>
-
-				<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
-					<AiOutlineWarning className="text-blue-600" />
-					<div className="text-gray-700">Non Existent: <span className="font-semibold">{housesData?.nonExistent}</span></div>
-				</div>
-			</div>
-
-			{/* Uncomment if you need to render secondAttempt's status
-    <div className="mt-4 bg-white p-4 rounded shadow">
-        <h2 className="text-xl font-semibold text-gray-700 mb-2">Second Attempt Statuses:</h2>
-        <ul className="space-y-1 text-gray-600">
-            {housesData?.secondAttempt?.map((house, index) => (
-                <li key={index}>
-                    {house?.statusAttempt}
-                </li>
-            ))}
-        </ul>
-    </div>
-    */}
-		</div>
-
-	)
+	return locationsData;
 }
 
-{/* Uncomment if you need to render secondAttempt's status
-<div className="space-y-6">
-	{housesData?.secondAttempt?.map((house) => (
-			<p className="text-black">
-					{house?.statusAttempt}
-			</p>
-	))}
-</div> */}
+export default async function page() {
+	const allLocationsData = await getAllLocationData();
+
+	return (
+		<div className="flex flex-row flex-wrap bg-gray-100 rounded-lg">
+			{allLocationsData.map((locationData, idx) => (
+				<div key={idx} className="p-8 m-4 max-w-[350px] bg-gray-100 border-2 border-white rounded-lg space-y-8">
+					<h1 className="text-3xl font-semibold text-gray-700 mb-4">
+						Location: <span className="font-normal text-blue-600">{locationData?.locationInfo[0]?.name}</span>
+					</h1>
+
+					<div className=" grid grid-cols-2 gap-4">
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineHome className="text-blue-600" />
+							<div className="text-gray-700">Total Houses: <span className="font-semibold">{locationData?.totalHouses}</span></div>
+						</div>
+
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineUser className="text-blue-600" />
+							<div className="text-gray-700">Visited Houses: <span className="font-semibold">{locationData?.visitedHouses}</span></div>
+						</div>
+
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineCheck className="text-blue-600" />
+							<div className="text-gray-700">Consent Final Yes: <span className="font-semibold">{locationData?.consentFinalYes?.length}</span></div>
+						</div>
+
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineReload className="text-blue-600" />
+							<div className="text-gray-700">2nd Attempt: <span className="font-semibold">{locationData?.secondAttempt?.length}</span></div>
+						</div>
+
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineWarning className="text-blue-600" />
+							<div className="text-gray-700">Non Existent: <span className="font-semibold">{locationData?.nonExistent}</span></div>
+						</div>
+					</div>
+				</div>
+			))}
+		</div>
+	);
+}
+
+
 
 
