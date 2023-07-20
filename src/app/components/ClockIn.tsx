@@ -101,8 +101,13 @@ async function addNewShift(user: any, siteId: number | null) {
     return response.json();
 }
 
-const ClockIn = ({ siteId }) => {
-    const [response, setResponse] = use
+interface ClockInProps {
+    siteId: number | null;
+}
+
+const ClockIn: React.FC<ClockInProps> = ({ siteId }) => {
+    // const [response, setRe]
+    const { user } = useUser();
 
 
     const [workerId, setWorkerId] = useState(user?.unsafeMetadata.id as number)
