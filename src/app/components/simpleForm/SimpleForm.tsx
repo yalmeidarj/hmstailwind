@@ -32,7 +32,7 @@ interface SimpleFormProps {
         name: string,
         lastName: string,
         statusAttempt: string,
-        emailOrPhone: string,
+        phoneOrEmail: string,
         notes: string,
         type: string,
         streetNumber: string,
@@ -60,7 +60,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
     const [name, setName] = useState(params.name);
     const [lastName, setLastName] = useState(params.lastName);
     const [statusAttempt, setStatusAttempt] = useState(params.statusAttempt);
-    const [emailOrPhone, setEmailOrPhone] = useState(params.emailOrPhone);
+    const [emailOrPhone, setEmailOrPhone] = useState(params.phoneOrEmail);
     const [type, setType] = useState(params.type);
     const [streetNumber, setStreetNumber] = useState(params.streetNumber);
     const [notes, setNotes] = useState(params.notes);
