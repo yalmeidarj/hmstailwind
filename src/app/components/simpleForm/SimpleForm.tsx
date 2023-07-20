@@ -275,7 +275,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                         <Controller
                             name="phoneOrEmail"
                             control={control}
-                            render={({ field }) => <TextField {...field} onChange={e => setEmailOrPhone(e.target.value)} label="Email" fullWidth />}
+                            render={({ field }) => <TextField {...field} onChange={e => setPhoneOrEmail(e.target.value)} label="Email" fullWidth />}
                         />
                         {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
                     </Grid>
