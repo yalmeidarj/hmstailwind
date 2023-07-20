@@ -22,8 +22,8 @@ async function getHouse(id: string) {
 
 
 interface House {
-    streetId: string;
-    id: string;
+    streetId: number;
+    id: number;
     name: string;
     lastName: string;
     statusAttempt: string;

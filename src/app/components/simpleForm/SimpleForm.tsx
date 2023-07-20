@@ -28,7 +28,7 @@ import { data } from "autoprefixer";
 interface SimpleFormProps {
     params: {
         id: number,
-        streetId: string,
+        streetId: number,
         name: string,
         lastName: string,
         statusAttempt: string,
