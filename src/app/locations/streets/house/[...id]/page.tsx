@@ -15,7 +15,7 @@ import { eq } from "drizzle-orm";
 async function getHouse(id: string) {
 
     const houseId = parseInt(id);
-    const houseData = await db.select().from(house).where(eq(house.id, houseId));
+    const houseData = await db.select().from(house).where(eq(house.id, houseId)).execute();
     return houseData[0]
 
 }
