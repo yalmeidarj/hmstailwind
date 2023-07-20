@@ -27,7 +27,7 @@ import { data } from "autoprefixer";
 // Define the prop types
 interface SimpleFormProps {
     params: {
-        id: string,
+        id: number,
         streetId: string,
         name: string,
         lastName: string,
@@ -41,7 +41,7 @@ interface SimpleFormProps {
 
 // Define your form input interface
 interface MyIFormInput {
-    id: string | number;
+    id: number;
     type: string;
     lastName: string;
     name: string;
