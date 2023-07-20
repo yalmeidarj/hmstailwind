@@ -99,7 +99,9 @@ export default async function Home() {
 
   const pace = await getPaceFinal(currentShift)
   // calculate the duration of the shift in hours
-  const shiftDuration = (pace.startingDate - new Date().getTime()) / 1000 / 60 / 60;
+  // calculate the duration of the shift in hours
+  const shiftDuration = (new Date().getTime() - new Date(pace.startingDate).getTime()) / 1000 / 60 / 60;
+
 
   // calculate the pace
   const userPace = pace.updatedHousesFinal / shiftDuration;
