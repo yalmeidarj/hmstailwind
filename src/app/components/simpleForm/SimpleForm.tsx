@@ -60,7 +60,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
     const [name, setName] = useState(params.name);
     const [lastName, setLastName] = useState(params.lastName);
     const [statusAttempt, setStatusAttempt] = useState(params.statusAttempt);
-    const [emailOrPhone, setEmailOrPhone] = useState(params.phoneOrEmail);
+    const [phoneOrEmail, setPhoneOrEmail] = useState(params.phoneOrEmail);
     const [type, setType] = useState(params.type);
     const [streetNumber, setStreetNumber] = useState(params.streetNumber);
     const [notes, setNotes] = useState(params.notes);
@@ -129,7 +129,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.name = name;
         data.lastName = lastName;
         data.statusAttempt = statusAttempt;
-        data.phoneOrEmail = emailOrPhone;
+        data.phoneOrEmail = phoneOrEmail;
         data.type = type;
         data.notes = notes;
 
