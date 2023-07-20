@@ -60,7 +60,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
             <Link href={`/locations/streets/${house.streetId}`}>
                 <button className="text-green-600 hover:underline flex items-center space-x-2 mb-4">
-                    Back to {house.streetInfo}
+                    Go back to view all houses
                 </button>
             </Link>
             <h1 className="flex flex-col items-center justify-center text-2xl font-semibold text-gray-700 mb-4">PROPERTY DETAILS</h1>
