@@ -68,11 +68,7 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 	return (
 		<div className="flex  flex-col items-center mb-8 mt-8">
 			{user?.unsafeMetadata.isClockedIn ? (
-				<div className="min-w-[275px] flex  flex-col bg-slate-400 items-center m-6 border border-gray-400 rounded-md p-4 shadow-md">
-					<h1 className='text-gray-600 text-lg mb-1'>Current pace <span className='rounded-md mt-2 mb-2 p-2 text-blue-600'>3.00</span></h1>
-					<p className="text-sm mb-4">Pace will be updated every 5 min...</p>
-					<ClockOut shiftId={shiftId} />
-				</div>
+				<ClockOut shiftId={shiftId} />
 			) : (
 				<div className="min-w-[275px] shadow-md  bg-slate-400 m-6 border border-gray-400 rounded-md p-4">
 					<h1 className="text-gray-600 text-lg mb-1">Clock In</h1>
