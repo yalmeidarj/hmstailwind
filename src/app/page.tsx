@@ -111,7 +111,7 @@ export default async function Home() {
 
     // const shift = (DateTime.fromISO(pace.startingDate, { zone: 'America/Toronto' }).toMillis()) / 1000 / 60 / 60;
     const updatedHouses = pace?.updatedHousesFinal || 0;
-    const startTime = pace?.startingDate;
+    const startTime = new Date(pace?.startingDate);
     const now = new Date();
     const shiftDurationInMilliseconds = now.getTime() - startTime.getTime();
 
@@ -134,6 +134,9 @@ export default async function Home() {
         </h1>
         <h2 className="text-blue-900">
           Houses updated: {updatedHouses}
+        </h2>
+        <h2 className="text-gray-600">
+          Shift Duration: {shiftDurationInMinutes.toFixed(2)} minutes
         </h2>
         <h2 className="text-gray-400">
           Start Time: {startTime.toLocaleString()}
