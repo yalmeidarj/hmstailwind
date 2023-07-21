@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from "@clerk/nextjs";
 import ClockOut from './ClockOut';
-
+import { DateTime } from 'luxon';
 interface Site {
 	id: number;
 	name: string | null;
@@ -34,7 +34,7 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 					workerId: workerId,
 					locationId: selectedSiteId,
 					isActive: true,
-					startingDate: new Date().toISOString()
+					startingDate: DateTime.now().setZone('America/Toronto').toISO()
 				})
 			});
 

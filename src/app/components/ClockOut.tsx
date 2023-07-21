@@ -1,6 +1,8 @@
 "use client"
 import React from 'react';
 import { useUser } from "@clerk/nextjs";
+import { DateTime } from 'luxon';
+
 
 interface ClockOutProps {
 	shiftId: number;
@@ -14,7 +16,7 @@ const ClockOut: React.FC<ClockOutProps> = ({ shiftId }) => {
 	const handleClockOut = async () => {
 		const data = {
 			isActive: false,
-			finishedDate: new Date().toISOString()
+			finishedDate: DateTime.now().setZone('America/Toronto').toISO(),
 		};
 		try {
 			const response = await fetch(`https://hmsapi.herokuapp.com/shiftLogger/${id}`, {

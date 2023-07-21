@@ -1,4 +1,5 @@
 "use client"
+import { DateTime } from 'luxon';
 
 import { useAuth } from "@clerk/nextjs";
 // import React, { useState, useEffect, Key } from 'react';
@@ -88,7 +89,7 @@ async function addNewShift(user: any, siteId: number | null) {
             workerId: user,
             locationId: siteId,
             isActive: true,
-            startingDate: new Date().toISOString()
+            startingDate: DateTime.now().setZone('America/Toronto').toISO()
         })
 
     });

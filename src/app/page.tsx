@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs';
 import { eq, and } from "drizzle-orm";
 import { location, street, shiftLogger, worker, house } from '../../drizzle/schema';
-
+import { DateTime } from 'luxon';
 import db from '../lib/utils/db';
 
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, Suspense, useState } from 'react';
@@ -49,7 +49,7 @@ type ShiftData = {
 async function getShiftLogger(workerId: any) {
   // const user = await currentUser();
   // const id = await 
-  const shiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.workerId, 2)));
+  const shiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.workerId, workerId))).execute();
   return shiftLoggers as unknown as ShiftData[];
 }
 
@@ -81,82 +81,110 @@ async function getShiftLoggerData(locationId: any) {
   return workers;
 }
 
+// async function calculateShiftDurationAndPace(shiftData: ShiftData) {
+//   const now = DateTime.now().setZone('America/Toronto').toMillis() / 1000 / 60 / 60;
+//   const shiftStartTime = DateTime.fromISO(shiftData.startingDate, { zone: 'America/Toronto' }).toMillis() / 1000 / 60 / 60;
+//   const shiftDuration = now - shiftStartTime;
+//   const userPace = shiftData.updatedHousesFinal / shiftDuration;
+
+//   // Returns the shift duration in hours and pace with 2 decimal places
+//   return {
+//     shiftDuration,
+//     userPace: Number(userPace.toFixed(2))
+//   };
+// }
 
 
 
 export default async function Home() {
   const data = await getLocationsDataDrizzle();
-  // const { userId } = auth()
-  const { userId } = auth();
   const user = await currentUser();
+
   const id = user?.publicMetadata.id as number;
   const currentShift = user?.unsafeMetadata.shiftLoggerId as number;
 
+  if (id !== undefined && currentShift !== undefined) {
+    const currentShift = user?.unsafeMetadata.shiftLoggerId as number;
+    const shiftLoggers = await getShiftLogger(id);
+    const pace = await getPaceFinal(currentShift)
+    // Continue with your logic
 
+    // const shift = (DateTime.fromISO(pace.startingDate, { zone: 'America/Toronto' }).toMillis()) / 1000 / 60 / 60;
+    const updatedHouses = pace?.updatedHousesFinal || 0;
+    const startTime = pace?.startingDate;
+    const now = new Date();
+    const shiftDurationInMilliseconds = now.getTime() - startTime.getTime();
 
-  const shiftLoggers = await getShiftLogger(id);
-  // console.log(user?.privateMetadata.role);
+    const shiftDurationInMinutes = shiftDurationInMilliseconds / 1000 / 60; // convert from ms to minutes
 
-  const pace = await getPaceFinal(currentShift)
-  // calculate the duration of the shift in hours
-  // calculate the duration of the shift in hours
-  // const shiftDuration = (new Date().getTime() - new Date(pace.startingDate).getTime()) / 1000 / 60 / 60;
+    let userPace = 0;
+    if (updatedHouses !== 0) {
+      userPace = shiftDurationInMinutes / updatedHouses; // this gives minutes per house update
+    }
 
+    // const userPace = shiftDuration / updatedHouses;
 
-  // // calculate the pace
-  // let userPace = 0;
-  // if (pace?.updatedHousesFinal && shiftDuration > 0) {
-  //   userPace = pace?.updatedHousesFinal / shiftDuration;
-  // }
+    // const userPaceString = userPace;
 
-  // // convert the pace to a string with 2 decimal places
-  // const userPaceString = userPace.toFixed(2);
-
-
-  if (!user) return <div className="text-blue-900">Not logged in</div>;
-  return (
-    <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-      {/* <h1 className="text-blue-900">
-        Houses updated: {pace?.updatedHousesFinal}
-      </h1>
-      <h1 className="text-blue-900">
-        Start Time: {pace.startingDate.toString()}
-      </h1>
-      <h1 className="text-blue-900">
-        Pace: {userPaceString}
-      </h1> */}
-
-      {/* <ShiftManager shifts={shiftLoggers} sites={data} /> */}
-      <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; neighborhood: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
-          <Suspense fallback={<SiteLoadingSkeleton />}>
-            <li key={location.id} className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
-              <Link href={`/locations/${location.id}`}>
-                <div className="block">
-                  <div className="flex content-center text-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
-                    <h2 className="text-xs font-semibold text-teal-500">Priority</h2>
-                    <span className="text-xs font-semibold text-teal-500">
-                      {" "}{location.priorityStatus}
-                    </span>
+    if (!user) return <div className="text-blue-900">Not logged in</div>;
+    return (
+      <main className="flex flex-col items-center justify-center w-full py-8 px-6">
+        <h1 className="text-lg text-blue-900">
+          Pace: {userPace.toLocaleString()}
+        </h1>
+        <h2 className="text-blue-900">
+          Houses updated: {updatedHouses}
+        </h2>
+        <h2 className="text-gray-400">
+          Start Time: {startTime.toLocaleString()}
+        </h2>
+        <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data.map((location) => (
+            <Suspense fallback={<SiteLoadingSkeleton />}>
+              <li key={location.id} className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
+                <Link href={`/locations/${location.id}`}>
+                  <div className="block">
+                    <div className="flex content-center text-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
+                      <h2 className="text-xs font-semibold text-teal-500">Priority</h2>
+                      <span className="text-xs font-semibold text-teal-500">
+                        {" "}{location.priorityStatus}
+                      </span>
+                    </div>
+                    <h2 className="text-blue-700 text-center justify-center text-lg font-semibold mb-1">{location.name}</h2>
+                    <div className="flex content-center text-center justify-center">
+                      {/* <h3 className="text-sm text-gray-600 mt-1"></h3> */}
+                      <p className="text-sm text-gray-500 mt-1">{location.neighborhood} | Streets: {getNumberOfStreets(location.id)} | Houses: {getNumberOfHouses(location.id)}</p>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Currently working
+                      {getShiftLoggerData(location.id)}
+                    </p>
                   </div>
-                  <h2 className="text-blue-700 text-center justify-center text-lg font-semibold mb-1">{location.name}</h2>
-                  <div className="flex content-center text-center justify-center">
-                    {/* <h3 className="text-sm text-gray-600 mt-1"></h3> */}
-                    <p className="text-sm text-gray-500 mt-1">{location.neighborhood} | Streets: {getNumberOfStreets(location.id)} | Houses: {getNumberOfHouses(location.id)}</p>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Currently working
-                    {getShiftLoggerData(location.id)}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          </Suspense>
-        ))}
-      </ul>
-    </main >
-  );
+                </Link>
+              </li>
+            </Suspense>
+          ))}
+        </ul>
+      </main >
+    );
+  } else {
+    console.log("ID or currentShift is undefined.");
+    // handle this error appropriately
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+//   );
+// }
 
 
