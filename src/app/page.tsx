@@ -100,33 +100,31 @@ export default async function Home() {
   const pace = await getPaceFinal(currentShift)
   // calculate the duration of the shift in hours
   // calculate the duration of the shift in hours
-  const shiftDuration = (new Date().getTime() - new Date(pace.startingDate).getTime()) / 1000 / 60 / 60;
+  // const shiftDuration = (new Date().getTime() - new Date(pace.startingDate).getTime()) / 1000 / 60 / 60;
 
 
-  // calculate the pace
-  let userPace = 0;
-  if (pace?.updatedHousesFinal && shiftDuration > 0) {
-    userPace = pace?.updatedHousesFinal / shiftDuration;
-  }
+  // // calculate the pace
+  // let userPace = 0;
+  // if (pace?.updatedHousesFinal && shiftDuration > 0) {
+  //   userPace = pace?.updatedHousesFinal / shiftDuration;
+  // }
 
-  // convert the pace to a string with 2 decimal places
-  const userPaceString = userPace.toFixed(2);
-
-
+  // // convert the pace to a string with 2 decimal places
+  // const userPaceString = userPace.toFixed(2);
 
 
   if (!user) return <div className="text-blue-900">Not logged in</div>;
   return (
     <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-      <h1 className="text-blue-900">
-        Houses updated: {pace.updatedHousesFinal}
+      {/* <h1 className="text-blue-900">
+        Houses updated: {pace?.updatedHousesFinal}
       </h1>
       <h1 className="text-blue-900">
         Start Time: {pace.startingDate.toString()}
       </h1>
       <h1 className="text-blue-900">
-        Pace: {userPace}
-      </h1>
+        Pace: {userPaceString}
+      </h1> */}
 
       {/* <ShiftManager shifts={shiftLoggers} sites={data} /> */}
       <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>

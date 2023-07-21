@@ -2,9 +2,8 @@
 import { useState, useEffect } from 'react';
 import { FaBars } from 'react-icons/fa';
 import Link from 'next/link';
-import { SignedIn, SignedOut } from '@clerk/nextjs'
 // import UserInfo from './UserInfo';
-import { UserButton } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import { useAuth } from "@clerk/nextjs";
 
 const Navbar = () => {
