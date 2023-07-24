@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-table'
 
 
+
 interface BasicTableProps {
     data: Array<any>; // Replace 'any' with the appropriate type for your data
     columns: Array<any>; // Replace 'any' with the appropriate type for your columns
@@ -16,7 +17,10 @@ interface BasicTableProps {
 
 import { useState } from 'react'
 
-export default function BasicTable({ data, columns }: BasicTableProps) {
+export default function BasicTable({ data,
+    columns,
+
+}: BasicTableProps) {
 
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState('')
@@ -38,68 +42,85 @@ export default function BasicTable({ data, columns }: BasicTableProps) {
     })
 
     return (
-        <div className='container mx-auto px-4'>
+        <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
             <input
                 type='text'
                 value={filtering}
                 onChange={e => setFiltering(e.target.value)}
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4'
             />
-            <table className='table-auto w-full mt-4'>
-                <thead className='bg-gray-200'>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <th
-                                    key={header.id}
-                                    onClick={header.column.getToggleSortingHandler()}
-                                    className='px-4 py-2'
-                                >
-                                    {header.isPlaceholder ? null : (
-                                        <div className='flex items-center'>
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                        </div>
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-
-
-                <tbody className='text-gray-700'>
-                    {table.getRowModel().rows.map(row => (
-                        <tr key={row.id} className='border-t border-gray-200 hover:bg-gray-100'>
-                            {row.getVisibleCells().map(cell => (
-                                <td key={cell.id} className='px-4 py-2'>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className='flex mt-4'>
-                <button onClick={() => table.setPageIndex(0)} className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2'>First page</button>
-                <button
-                    disabled={!table.getCanPreviousPage()}
-                    onClick={() => table.previousPage()}
-                    className={`px-4 py-2 rounded ${table.getCanPreviousPage() ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500'} mr-2`}
-                >
-                    Previous page
-                </button>
-                <button
-                    disabled={!table.getCanNextPage()}
-                    onClick={() => table.nextPage()}
-                    className={`px-4 py-2 rounded ${table.getCanNextPage() ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500'} mr-2`}
-                >
-                    Next page
-                </button>
-                <button onClick={() => table.setPageIndex(table.getPageCount() - 1)} className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'>Last page</button>
+            <div className="mb-4 overflow-x-auto">
+                <table className=' divide-y md:table-fixed divide-gray-200'>
+                    <thead className='bg-gray-200'>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th
+                                        key={header.id}
+                                        onClick={header.column.getToggleSortingHandler()}
+                                        className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                                    >
+                                        {header.isPlaceholder ? null : (
+                                            <div className='flex items-center'>
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                            </div>
+                                        )}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody className='bg-white divide-y divide-gray-200 text-gray-700'>
+                        {table.getRowModel().rows.map(row => (
+                            <tr key={row.id} className='hover:bg-gray-100'>
+                                {row.getVisibleCells().map(cell => (
+                                    <td key={cell.id} className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
+            <div className="flex flex-row sm:flex-col items-center justify-between my-4">
+                <div className="mb-2 sm:mb-0">
+                    <button
+                        onClick={() => table.setPageIndex(0)}
+                        className="inline-flex items-center px-2 sm:px-4 py-1 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        First
+                    </button>
+                </div>
+                <div className="space-x-0 sm:space-x-2 space-y-2 sm:space-y-0">
+                    <button
+                        onClick={() => table.previousPage()}
+                        className="inline-flex items-center px-2 sm:px-4 py-1 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Prev
+                    </button>
+                    <button
+                        onClick={() => table.nextPage()}
+                        className="inline-flex items-center px-2 sm:px-4 py-1 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </button>
+                    <button
+                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        className="inline-flex items-center px-2 sm:px-4 py-1 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Last
+                    </button>
+                </div>
+            </div>
+
         </div>
     )
 }

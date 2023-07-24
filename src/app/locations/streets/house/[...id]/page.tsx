@@ -20,6 +20,8 @@ async function getHouse(id: string) {
 
 }
 
+export const runtime = 'edge';
+
 
 interface House {
     streetId: number;

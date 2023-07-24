@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs';
 import { eq, and } from "drizzle-orm";
 import { location, street, shiftLogger, worker, house } from '../../drizzle/schema';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import db from '../lib/utils/db';
 
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, Suspense, useState } from 'react';
@@ -13,6 +13,7 @@ import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
 // import LocationCard from './components/LocationCard';
 
+export const runtime = 'edge';
 
 async function getLocationsDataDrizzle() {
   // Use the drizzle-orm to get the data from the database
@@ -107,20 +108,30 @@ export default async function Home() {
     const currentShift = user?.unsafeMetadata.shiftLoggerId as number;
     const shiftLoggers = await getShiftLogger(id);
     const pace = await getPaceFinal(currentShift)
-    // Continue with your logic
 
-    // const shift = (DateTime.fromISO(pace.startingDate, { zone: 'America/Toronto' }).toMillis()) / 1000 / 60 / 60;
-    const updatedHouses = pace?.updatedHousesFinal || 0;
-    const startTime = new Date(pace?.startingDate);
-    const now = new Date();
-    const shiftDurationInMilliseconds = now.getTime() - startTime.getTime();
 
-    const shiftDurationInMinutes = shiftDurationInMilliseconds / 1000 / 60; // convert from ms to minutes
+    const updatedHouses = pace?.updatedHouses || 0;
+    const updatedHousesFinal = pace?.updatedHousesFinal || 0;
+    const startTime = DateTime.fromJSDate(new Date(pace?.startingDate));
+
+    const formattedStartTime = startTime.toLocaleString(DateTime.DATETIME_FULL);
+    const now = DateTime.now().setZone('America/Toronto');
+    const shiftDurationInMilliseconds = now.diff(startTime, 'milliseconds').milliseconds;
+
+    let shiftDurationInMinutes = shiftDurationInMilliseconds / 1000 / 60; // convert from ms to minutes
+
+    let shiftDurationAdjusted = shiftDurationInMinutes - (updatedHouses * 1.5);
 
     let userPace = 0;
-    if (updatedHouses !== 0) {
-      userPace = shiftDurationInMinutes / updatedHouses; // this gives minutes per house update
+    if (updatedHousesFinal !== 0) {
+      userPace = shiftDurationAdjusted / updatedHousesFinal; // this gives adjusted minutes per house update
     }
+
+    // Ensure userPace is not NaN
+    if (isNaN(userPace)) {
+      userPace = 0;
+    }
+
 
     // const userPace = shiftDuration / updatedHouses;
 
@@ -129,47 +140,56 @@ export default async function Home() {
     if (!user) return <div className="text-blue-900">Not logged in</div>;
     return (
       <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-        <h1 className="text-lg text-blue-900">
-          Pace: {userPace.toLocaleString()}
-        </h1>
-        <h2 className="text-blue-900">
-          Houses updated: {updatedHouses}
-        </h2>
-        <h2 className="text-gray-600">
-          Shift Duration: {shiftDurationInMinutes.toFixed(2)} minutes
-        </h2>
-        <h2 className="text-gray-400">
-          Start Time: {startTime.toLocaleString()}
-        </h2>
-        <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.map((location) => (
-            <Suspense fallback={<SiteLoadingSkeleton />}>
-              <li key={location.id} className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
-                <Link href={`/locations/${location.id}`}>
-                  <div className="block">
-                    <div className="flex content-center text-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
-                      <h2 className="text-xs font-semibold text-teal-500">Priority</h2>
-                      <span className="text-xs font-semibold text-teal-500">
-                        {" "}{location.priorityStatus}
-                      </span>
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-6 w-full">
+          <h1 className="text-blue-900 text-2xl mb-4">Pace: ~{userPace.toFixed(0)} minutes</h1>
+          <h2 className="text-blue-900 mb-2">
+            FINAL ANSWER: {updatedHousesFinal}{" "}
+            {/* <span className="text-sm text-gray-400">FINAL ANSWER</span> */}
+          </h2>
+          <h2 className="text-blue-900 mb-2">Nobody home: {updatedHouses}</h2>
+          <h2 className="text-gray-600 mb-2">
+            Shift duration: {shiftDurationInMinutes.toFixed(2)} minutes
+          </h2>
+          <h2 className="text-gray-400 mb-4">Start time: {formattedStartTime}</h2>
+
+          <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.map((location) => (
+              <Suspense fallback={<SiteLoadingSkeleton />} key={location.id}>
+                <li className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
+                  <Link href={`/locations/${location.id}`}>
+                    <div className="block">
+                      <div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
+                        <h2 className="text-xs font-semibold text-teal-500">
+                          Priority
+                        </h2>
+                        <span className="text-xs font-semibold text-teal-500">
+                          {" "}
+                          {location.priorityStatus}
+                        </span>
+                      </div>
+                      <h2 className="text-blue-700 text-center text-lg font-semibold mb-1">
+                        {location.name}
+                      </h2>
+                      <div className="flex items-center justify-center">
+                        <p className="text-sm text-gray-500 mt-1">
+                          {location.neighborhood} | Streets:{" "}
+                          {getNumberOfStreets(location.id)} | Houses:{" "}
+                          {getNumberOfHouses(location.id)}
+                        </p>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Currently working: {getShiftLoggerData(location.id)}
+                      </p>
                     </div>
-                    <h2 className="text-blue-700 text-center justify-center text-lg font-semibold mb-1">{location.name}</h2>
-                    <div className="flex content-center text-center justify-center">
-                      {/* <h3 className="text-sm text-gray-600 mt-1"></h3> */}
-                      <p className="text-sm text-gray-500 mt-1">{location.neighborhood} | Streets: {getNumberOfStreets(location.id)} | Houses: {getNumberOfHouses(location.id)}</p>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Currently working
-                      {getShiftLoggerData(location.id)}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            </Suspense>
-          ))}
-        </ul>
-      </main >
+                  </Link>
+                </li>
+              </Suspense>
+            ))}
+          </ul>
+        </div>
+      </main>
+
     );
   } else {
     console.log("ID or currentShift is undefined.");

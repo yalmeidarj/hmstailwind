@@ -67,7 +67,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
 
     const { isLoaded, isSignedIn, user } = useUser();
 
-    const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
+
 
     // Use useEffect to update state when 'params' changes
     useEffect(() => {
@@ -132,6 +132,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.phoneOrEmail = phoneOrEmail;
         data.type = type;
         data.notes = notes;
+        const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
 
         // setSiteId(user.unsafeMetadata.ShiftLoggerId);
 
@@ -177,18 +178,27 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                 throw new Error('Network response was not ok');
             }
 
-            // await new Promise(resolve => setTimeout(resolve, 1000));
+            const updatedhousesFinalData = {
+                updatedHousesFinal: 1,
 
-            const shift = await fetch(`https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`, {
-                method: 'PUT',
-                // headers: {
-                //     'Content-Type': 'application/json',
-                // },
-                // body: JSON.stringify(updatedhousesData),
-            });
-            if (!shift.ok) {
-                throw new Error('Network response was not ok');
             }
+
+            // Conditionally fetch updatedhousesfinal or shift based on statusAttempt
+            let endpoint = `https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`;
+            let bodyData = { updatedHousesFinal: 1 };
+            if (statusAttempt !== "consent final yes" && statusAttempt !== "consent final no") {
+                endpoint = `https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`;
+                bodyData = { updatedHouses: 1 };
+            }
+
+            const finalFetch = await fetch(endpoint, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bodyData),
+            });
+            if (!finalFetch.ok) throw new Error('Network response was not ok');
 
         } catch (error) {
             console.error(error);

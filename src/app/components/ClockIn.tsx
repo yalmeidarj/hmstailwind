@@ -89,6 +89,8 @@ async function addNewShift(user: any, siteId: number | null) {
             workerId: user,
             locationId: siteId,
             isActive: true,
+            updatedHouses: 0,
+            updatedHousesFinal: 0,
             startingDate: DateTime.now().setZone('America/Toronto').toISO()
         })
 

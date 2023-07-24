@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 
 import db from '../../../../lib/utils/db';
 
-
+export const runtime = 'edge';
 
 async function getAllStreetNumbersOfStreet(streetId: any) {
     // Use the drizzle-orm to get the data from the database

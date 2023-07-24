@@ -12,7 +12,7 @@ import {
   uniqueIndex,
   boolean,
 } from "drizzle-orm/pg-core";
-
+import { relations } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
 export const prismaMigrations = pgTable("_prisma_migrations", {
@@ -124,3 +124,45 @@ export const shiftLogger = pgTable("ShiftLogger", {
   userProviderUserId: varchar("userProviderUserId", { length: 255 }),
   isActive: boolean("isActive"),
 });
+
+export const prismaMigrationsRelations = relations(
+  prismaMigrations,
+  () => ({})
+);
+
+export const locationRelations = relations(location, ({ one, many }: any) => ({
+  streets: many(street),
+  houses: many(house),
+  shiftLoggers: many(shiftLogger),
+}));
+
+export const streetRelations = relations(street, ({ one, many }: any) => ({
+  location: one(location, {
+    fields: [street.locationId],
+    references: [location.id],
+  }),
+  houses: many(house),
+}));
+
+export const houseRelations = relations(house, ({ one }: any) => ({
+  street: one(street, { fields: [house.streetId], references: [street.id] }),
+  location: one(location, {
+    fields: [house.locationId],
+    references: [location.id],
+  }),
+}));
+
+export const workerRelations = relations(worker, ({ many }: any) => ({
+  shiftLoggers: many(shiftLogger),
+}));
+
+export const shiftLoggerRelations = relations(shiftLogger, ({ one }: any) => ({
+  worker: one(worker, {
+    fields: [shiftLogger.workerId],
+    references: [worker.id],
+  }),
+  location: one(location, {
+    fields: [shiftLogger.locationId],
+    references: [location.id],
+  }),
+}));

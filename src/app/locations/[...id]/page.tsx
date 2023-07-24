@@ -6,7 +6,7 @@ import db from '@/lib/utils/db';
 import { eq, lt, gte, ne, inArray } from "drizzle-orm";
 import { location, street, house } from "../../../../drizzle/schema";
 
-
+export const runtime = 'edge';
 
 async function getLocations(id: string) {
 

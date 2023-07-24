@@ -2,17 +2,24 @@ import BasicTable from '../components/BasicTable'
 import db from '../../lib/utils/db'
 import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
 import { and, eq } from "drizzle-orm";
+import ExampleWithReactQueryProvider from '../components/SortingTable';
 
-
+export const runtime = 'edge';
 
 async function getLocationsData() {
     // Use Prisma Client to get all locations from the database
-    const locations = await db.select().from(location);
+    const locations = await db.select().from(location).execute();
     return locations;
 }
 
 async function getHousesData() {
-    const houses = await db.select().from(house);
+    // const houses = await db.select().from(house).execute();
+    const houses = await db.query.house.findMany({
+        with: {
+            street: true,
+            location: true,
+        },
+    });
     const allShiftLoggerWithDatesAsStrings = houses.map(houses => ({
         ...houses,
         lastUpdated: houses.lastUpdated ? new Date(houses.lastUpdated).toISOString() : null,
@@ -23,7 +30,12 @@ async function getHousesData() {
 }
 
 async function getHousesDataFiltered() {
-    const houses = await db.select().from(house);
+    // const houses = await db.select().from(house).execute();
+    const houses = await db.query.house.findMany({
+        with: {
+            street: true
+        },
+    });
     const allShiftLoggerWithDatesAsStrings = houses.map(house => ({
         ...house,
         lastUpdated: house.lastUpdated ? new Date(house.lastUpdated).toISOString() : null,
@@ -60,13 +72,13 @@ async function getHousesDataFiltered() {
 
 
 async function getWorkersData() {
-    const workers = await db.select().from(worker);
+    const workers = await db.select().from(worker).execute();
     return workers;
 }
 
 
 async function getShiftLoggerData() {
-    const shiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.isActive, true));
+    const shiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.isActive, true)).execute();
     const allShiftLoggerWithDatesAsStrings = shiftLoggers.map(shiftLogger => ({
         ...shiftLogger,
         startingDate: shiftLogger.startingDate ? new Date(shiftLogger.startingDate).toISOString() : null,
@@ -74,8 +86,8 @@ async function getShiftLoggerData() {
     }));
 
     const shiftLoggersWithWorkersAndLocations = await Promise.all(allShiftLoggerWithDatesAsStrings.map(async (logger) => {
-        const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId));
-        const locations = await db.select().from(location).where(eq(location.id, logger.locationId));
+        const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
+        const locations = await db.select().from(location).where(eq(location.id, logger.locationId)).execute();
         return {
             ...logger,
             worker: workers[0], // assuming workerId is unique and fetches only one worker
@@ -87,7 +99,7 @@ async function getShiftLoggerData() {
 }
 
 async function getShiftLoggerPastData() {
-    const shiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.isActive, false));
+    const shiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.isActive, false)).execute();
     const allShiftLoggerWithDatesAsStrings = shiftLoggers.map(shiftLogger => ({
         ...shiftLogger,
         startingDate: shiftLogger.startingDate ? new Date(shiftLogger.startingDate).toISOString() : null,
@@ -95,8 +107,8 @@ async function getShiftLoggerPastData() {
     }));
 
     const shiftLoggersWithWorkersAndLocations = await Promise.all(allShiftLoggerWithDatesAsStrings.map(async (logger) => {
-        const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId));
-        const locations = await db.select().from(location).where(eq(location.id, logger.locationId));
+        const workers = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
+        const locations = await db.select().from(location).where(eq(location.id, logger.locationId)).execute();
         return {
             ...logger,
             worker: workers[0], // assuming workerId is unique and fetches only one worker
@@ -118,7 +130,7 @@ export default async function page() {
         },
         {
             header: 'Street',
-            accessorKey: 'Street.name',
+            accessorKey: 'street.name',
             footer: 'Street',
         },
         {
@@ -128,7 +140,7 @@ export default async function page() {
         },
         {
             header: 'Location',
-            accessorKey: 'Location.name',
+            accessorKey: 'location.name',
             footer: 'Location',
         },
         // {
@@ -283,19 +295,19 @@ export default async function page() {
     const filteredData = await getHousesDataFiltered();
     return (
         <div className="container mx-auto py-8 px-4">
-            <div className="flex flex-row flex-wrap mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                    <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Active Shifts</h1>
-                    <BasicTable data={dataShiftLogger} columns={ShiftLoggerColumns} />
-                </div>
-                <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                    <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Past Shifts</h1>
-                    <BasicTable data={dataShiftLoggerPast} columns={ShiftLoggerColumns} />
-                </div>
+            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
+                <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Active Shifts</h1>
+                <BasicTable data={dataShiftLogger} columns={ShiftLoggerColumns} />
             </div>
+            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
+                <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Past Shifts</h1>
+                <BasicTable data={dataShiftLoggerPast} columns={ShiftLoggerColumns} />
+            </div>
+
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Houses</h1>
                 <BasicTable data={dataHouses} columns={housesColumns} />
+                {/* {dataHouses.map} */}
             </div>
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Locations</h1>
@@ -308,21 +320,13 @@ export default async function page() {
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Location Report</h1>
                 <BasicTable data={dataWorkers} columns={workerColumns} />
+                {/* </div> */}
+
             </div>
-            {/* <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                {filteredData.totalHouses}
-            </div>
-            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                {filteredData.consentFinalNo}
-            </div>
-            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                {filteredData.consentFinalYes}
-            </div>
-            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
-                {filteredData.visitedHouses}
-            </div> */}
+
+            <ExampleWithReactQueryProvider />
         </div>
     )
 }
 
-// export default App
+

@@ -3,6 +3,7 @@ import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
 import { and, eq } from "drizzle-orm";
 import { AiOutlineHome, AiOutlineUser, AiOutlineCheck, AiOutlineReload, AiOutlineWarning } from "react-icons/ai";
 
+export const runtime = 'edge';
 
 async function getHousesDataFiltered(locationId: number) {
 	const houses = await db.select().from(house).where(eq(house.locationId, locationId)).execute();
@@ -100,5 +101,5 @@ export default async function page() {
 }
 
 
-
-
+// melhar deixar com os dois campos, pra ter todos (o email e o telefone).... tehdfjal tnsal.
+// ordem n'umerica .
