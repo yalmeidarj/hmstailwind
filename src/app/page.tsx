@@ -13,7 +13,7 @@ import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
 // import LocationCard from './components/LocationCard';
 
-export const runtime = 'edge';
+
 
 async function getLocationsDataDrizzle() {
   // Use the drizzle-orm to get the data from the database

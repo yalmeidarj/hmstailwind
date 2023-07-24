@@ -4,7 +4,7 @@ import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
 import { and, eq } from "drizzle-orm";
 import ExampleWithReactQueryProvider from '../components/SortingTable';
 
-export const runtime = 'edge';
+
 
 async function getLocationsData() {
     // Use Prisma Client to get all locations from the database
