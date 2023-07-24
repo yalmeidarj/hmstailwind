@@ -101,7 +101,7 @@ export default async function Home() {
   const data = await getLocationsDataDrizzle();
   const user = await currentUser();
 
-  const id = user?.publicMetadata.id as number;
+  const id = user?.unsafeMetadata.id as number;
   const currentShift = user?.unsafeMetadata.shiftLoggerId as number;
 
   if (id !== undefined && currentShift !== undefined) {
