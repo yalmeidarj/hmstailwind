@@ -185,10 +185,13 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
 
             // Conditionally fetch updatedhousesfinal or shift based on statusAttempt
             let endpoint = `https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`;
-            let bodyData = { updatedHousesFinal: 1 };
+            let bodyData: { updatedHousesFinal?: number, updatedHouses?: number };
+
             if (statusAttempt !== "consent final yes" && statusAttempt !== "consent final no") {
                 endpoint = `https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`;
                 bodyData = { updatedHouses: 1 };
+            } else {
+                bodyData = { updatedHousesFinal: 1 };
             }
 
             const finalFetch = await fetch(endpoint, {
