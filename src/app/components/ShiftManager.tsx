@@ -74,7 +74,7 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 					<h1 className="text-gray-600 text-lg mb-1">Clock In</h1>
 					<p className="text-sm">Please select a site to clock in.</p>
 					<select
-						value={selectedSiteId}
+						value={0}
 						onChange={({ target: { value } }) => setSelectedSiteId(Number(value))}
 						className="w-full border text-gray-500 border-gray-300 rounded-md mt-2 mb-2 p-2"
 					>

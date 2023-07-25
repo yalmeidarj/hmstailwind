@@ -32,8 +32,10 @@ interface SimpleFormProps {
         name: string,
         lastName: string,
         statusAttempt: string,
-        phoneOrEmail: string,
+        email: string;
+        phone: string;
         notes: string,
+        salesForceNotes: string;
         type: string,
         streetNumber: string,
     }
@@ -46,8 +48,10 @@ interface MyIFormInput {
     lastName: string;
     name: string;
     statusAttempt: string;
-    phoneOrEmail: string;
+    email: string;
+    phone: string;
     notes: string;
+    salesForceNotes: string;
     isActive: boolean;
     lastUpdated: Date;
     lastUpdatedBy: string;
@@ -60,10 +64,12 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
     const [name, setName] = useState(params.name);
     const [lastName, setLastName] = useState(params.lastName);
     const [statusAttempt, setStatusAttempt] = useState(params.statusAttempt);
-    const [phoneOrEmail, setPhoneOrEmail] = useState(params.phoneOrEmail);
+    const [phone, setPhone] = useState(params.phone);
+    const [email, setEmail] = useState(params.email);
     const [type, setType] = useState(params.type);
     const [streetNumber, setStreetNumber] = useState(params.streetNumber);
     const [notes, setNotes] = useState(params.notes);
+    const [salesForceNotes, setSalesForceNotes] = useState(params.salesForceNotes);
 
     const { isLoaded, isSignedIn, user } = useUser();
 
@@ -76,7 +82,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         setName(params.name);
         setLastName(params.lastName);
         setStatusAttempt(params.statusAttempt);
-        setPhoneOrEmail(params.phoneOrEmail);
+        setEmail(params.email);
+        setPhone(params.phone);
         setType(params.type);
         setStreetNumber(params.streetNumber);
         setNotes(params.notes);
@@ -183,6 +190,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
 
             }
 
+
             // Conditionally fetch updatedhousesfinal or shift based on statusAttempt
             let endpoint = `https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`;
             let bodyData: { updatedHousesFinal?: number, updatedHouses?: number };
@@ -221,6 +229,14 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
             {/* <APIRequest /> */}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Controller
+                            name="salesForceNotes"
+                            control={control}
+                            render={({ field }) => <TextField {...field} onChange={e => setNotes(e.target.value)} label="SalesForce Notes" fullWidth multiline />}
+                        />
+                        {errors.salesForceNotes && <Alert severity="error">{errors.salesForceNotes.message}</Alert>}
+                    </Grid>
                     <Grid item xs={6}>
                         {/* <FormLabel id="demo-radio-buttons-group-label">Construction difficulty</FormLabel> */}
                         {/* Construction type */}
@@ -286,20 +302,29 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                     </Grid>
                     <Grid item xs={6}>
                         <Controller
-                            name="phoneOrEmail"
+                            name="email"
                             control={control}
-                            render={({ field }) => <TextField {...field} onChange={e => setPhoneOrEmail(e.target.value)} label="Email" fullWidth />}
+                            render={({ field }) => <TextField {...field} onChange={e => setEmail(e.target.value)} label="Email" fullWidth />}
                         />
-                        {errors.phoneOrEmail && <Alert severity="error">{errors.phoneOrEmail.message}</Alert>}
+                        {errors.email && <Alert severity="error">{errors.email.message}</Alert>}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field }) => <TextField {...field} onChange={e => setPhone(e.target.value)} label="Phone" fullWidth />}
+                        />
+                        {errors.phone && <Alert severity="error">{errors.phone.message}</Alert>}
                     </Grid>
                     <Grid item xs={12}>
                         <Controller
                             name="notes"
                             control={control}
-                            render={({ field }) => <TextField {...field} onChange={e => setNotes(e.target.value)} label="Notes" fullWidth multiline />}
+                            render={({ field }) => <TextField {...field} onChange={e => setNotes(e.target.value)} label="Internal Notes" fullWidth multiline />}
                         />
                         {errors.notes && <Alert severity="error">{errors.notes.message}</Alert>}
                     </Grid>
+
                     <Grid item xs={6}>
                         <GoBack text='Previous' />
                     </Grid>
