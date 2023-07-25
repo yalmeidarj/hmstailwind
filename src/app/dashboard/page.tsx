@@ -52,7 +52,9 @@ async function getHousesDataFiltered() {
         house.streetNumber === null &&
         house.lastName === null &&
         house.notes === null &&
-        house.phoneOrEmail === null &&
+        house.salesForceNotes === null &&
+        house.email === null &&
+        house.phone === null &&
         house.type === null &&
         house.streetId === null &&
         house.lastUpdatedBy === null &&
