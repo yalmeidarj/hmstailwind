@@ -136,7 +136,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.name = name;
         data.lastName = lastName;
         data.statusAttempt = statusAttempt;
-        data.phoneOrEmail = phoneOrEmail;
+        data.email = email;
+        data.phone = phone;
         data.type = type;
         data.notes = notes;
         const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
