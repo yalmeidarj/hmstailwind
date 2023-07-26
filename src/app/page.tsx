@@ -12,10 +12,11 @@ import Loading from './components/Loading';
 import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
 import Locations from './components/Locations';
+import { ai } from 'drizzle-orm/column.d-aa4e525d';
 // import LocationCard from './components/LocationCard';
 
 
-async function getLocationsDataDrizzle(pageNumber, pageSize) {
+async function getLocationsDataDrizzle(pageNumber: number, pageSize: number) {
   // Use the drizzle-orm to get the data from the database
   const offset = (pageNumber - 1) * pageSize;  // Calculate the offset
 
