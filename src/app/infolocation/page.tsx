@@ -1,7 +1,7 @@
 import db from '../../lib/utils/db'
 import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
 import { and, eq } from "drizzle-orm";
-import { AiOutlineHome, AiOutlineUser, AiOutlineCheck, AiOutlineReload, AiOutlineWarning } from "react-icons/ai";
+import { AiOutlineHome, AiOutlineUser, AiOutlineCheck, AiOutlineReload, AiOutlineWarning, AiOutlineClose } from "react-icons/ai";
 
 
 
@@ -16,35 +16,25 @@ async function getHousesDataFiltered(locationId: number) {
 
 	const totalHouses = allHousesWithDatesAsStrings.length;
 	const visitedHouses = allHousesWithDatesAsStrings.filter(house => house.lastUpdated !== null).length;
-	const consentFinalYes = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'consent final yes');
-	const secondAttempt = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === '2nd attempt');
+	const consentFinal = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Consent Final');
+	const consentFinalYes = consentFinal.filter(house => house.consent === 'Yes').length;
+	const consentFinalNo = consentFinal.filter(house => house.consent === 'No').length;
+	const secondAttempt = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Door Knock Attempt 2').length;
 
-	const nonExistent = allHousesWithDatesAsStrings.filter(house =>
-		house.name === null &&
-		house.locationId === null &&
-		house.streetNumber === null &&
-		house.lastName === null &&
-		house.notes === null &&
-		house.salesForceNotes === null &&
-		house.email === null &&
-		house.phone === null &&
-		house.type === null &&
-		house.streetId === null &&
-		house.lastUpdatedBy === null &&
-		house.statusAttempt === null &&
-		house.consent === null
-	).length;
+	const nonExistent = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Non Existent').length;
 
 	return {
 		allHousesWithDatesAsStrings,
 		totalHouses,
 		visitedHouses,
 		consentFinalYes,
+		consentFinalNo,
 		secondAttempt,
 		nonExistent,
 		locationInfo
 	};
 }
+
 
 
 async function getAllLocationData() {
@@ -83,17 +73,21 @@ export default async function page() {
 
 						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
 							<AiOutlineCheck className="text-blue-600" />
-							<div className="text-gray-700">Consent Final Yes: <span className="font-semibold">{locationData?.consentFinalYes?.length}</span></div>
+							<div className="text-gray-700">Consent Final Yes: <span className="font-semibold">{locationData?.consentFinalYes}</span></div>
 						</div>
 
 						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
 							<AiOutlineReload className="text-blue-600" />
-							<div className="text-gray-700">2nd Attempt: <span className="font-semibold">{locationData?.secondAttempt?.length}</span></div>
+							<div className="text-gray-700">2nd Attempt: <span className="font-semibold">{locationData?.secondAttempt}</span></div>
 						</div>
 
 						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
 							<AiOutlineWarning className="text-blue-600" />
 							<div className="text-gray-700">Non Existent: <span className="font-semibold">{locationData?.nonExistent}</span></div>
+						</div>
+						<div className="bg-white p-4 rounded shadow flex items-center space-x-2">
+							<AiOutlineClose className="text-blue-600" />
+							<div className="text-gray-700">Consent Final No: <span className="font-semibold">{locationData?.consentFinalNo}</span></div>
 						</div>
 					</div>
 				</div>

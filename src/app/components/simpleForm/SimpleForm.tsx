@@ -32,6 +32,7 @@ interface SimpleFormProps {
         name: string,
         lastName: string,
         statusAttempt: string,
+        consent: string,
         email: string;
         phone: string;
         notes: string,
@@ -48,6 +49,7 @@ interface MyIFormInput {
     lastName: string;
     name: string;
     statusAttempt: string;
+    consent: string,
     email: string;
     phone: string;
     notes: string;
@@ -64,6 +66,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
     const [name, setName] = useState(params.name);
     const [lastName, setLastName] = useState(params.lastName);
     const [statusAttempt, setStatusAttempt] = useState(params.statusAttempt);
+    const [consent, setConsent] = useState(params.consent);
     const [phone, setPhone] = useState(params.phone);
     const [email, setEmail] = useState(params.email);
     const [type, setType] = useState(params.type);
@@ -82,10 +85,12 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         setName(params.name);
         setLastName(params.lastName);
         setStatusAttempt(params.statusAttempt);
+        setConsent(params.consent);
         setEmail(params.email);
         setPhone(params.phone);
         setType(params.type);
         setStreetNumber(params.streetNumber);
+        setSalesForceNotes(params.salesForceNotes);
         setNotes(params.notes);
     }, [params]);
 
@@ -136,10 +141,12 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.name = name;
         data.lastName = lastName;
         data.statusAttempt = statusAttempt;
+        data.consent = consent;
         data.email = email;
         data.phone = phone;
         data.type = type;
         data.notes = notes;
+        data.salesForceNotes = salesForceNotes;
         const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
 
         // setSiteId(user.unsafeMetadata.ShiftLoggerId);
@@ -259,7 +266,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                         />
                         {errors.type && <Alert severity="error">{errors.type.message}</Alert>}
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
                         <Controller
                             name="statusAttempt"
                             control={control}
@@ -267,18 +274,38 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                                 <Select
                                     {...field}
                                     fullWidth
+                                    value={consent}
 
                                     onChange={(e) => setStatusAttempt(e.target.value)}
                                 >
-                                    <MenuItem value={"1st attempt"}>1st Attempt</MenuItem>
-                                    <MenuItem value={"2nd attempt"}>2nd Attempt</MenuItem>
-                                    <MenuItem value={"3rd attempt"}>3rd Attempt</MenuItem>
-                                    <MenuItem value={"4th attempt"}>4th Attempt</MenuItem>
-                                    <MenuItem value={"5th attempt"}>5th Attempt</MenuItem>
-                                    <MenuItem value={"engineer visit required"}>engineer visit required</MenuItem>
-                                    <MenuItem value={"consent final yes"}>consent final yes</MenuItem>
-                                    <MenuItem value={"consent final no"}>consent final no</MenuItem>
-                                    <MenuItem value={"drop type unverified"}>drop type unverified</MenuItem>
+                                    <MenuItem value={"No Attempt"}>No Attempt</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 1"}>Door Knock Attempt 1</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 2"}>Door Knock Attempt 2</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 3"}>Door Knock Attempt 3</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 4"}>Door Knock Attempt 4</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 5"}>Door Knock Attempt 5</MenuItem>
+                                    <MenuItem value={"Door Knock Attempt 6"}>Door Knock Attempt 6</MenuItem>
+                                    <MenuItem value={"engineer visit required"}>Engineer Visit Required</MenuItem>
+                                    <MenuItem value={"Home Does Not Exist"}>Home Does Not Exist</MenuItem>
+
+                                </Select>
+                            )}
+                        />
+                        {errors.statusAttempt && <Alert severity="error">{errors.statusAttempt.message}</Alert>}
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Controller
+                            name="consent"
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    fullWidth
+                                    onChange={(e) => setConsent(e.target.value)}
+                                >
+                                    <MenuItem value={"Consent Final Yes"}>Consent Final Yes</MenuItem>
+                                    <MenuItem value={"Consent Final No"}>Consent Final No</MenuItem>
+
                                 </Select>
                             )}
                         />

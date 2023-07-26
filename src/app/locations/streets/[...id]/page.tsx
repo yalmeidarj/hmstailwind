@@ -38,7 +38,7 @@ function getConditionalClass(statusAttempt: string, consent: string) {
             return 'bg-purple-200 text-purple-900';
         case 'Door Knock Attempt 6':
             return 'bg-red-200 text-red-900';
-        case 'consent final':
+        case 'Consent Final':
             if (consent.toLowerCase() == 'yes') {
                 return 'bg-green-200 text-green-900';
             } else if (consent.toLowerCase() == 'no') {
@@ -48,9 +48,12 @@ function getConditionalClass(statusAttempt: string, consent: string) {
             }
         case 'engineer visit required':
             return 'bg-teal-200 text-teal-900';
+        case 'Home Does Not Exist':
+            return 'bg-black-200 text-black-900';
         default:
             return 'border-2 border-black text-blue-900';
     }
+
 }
 
 

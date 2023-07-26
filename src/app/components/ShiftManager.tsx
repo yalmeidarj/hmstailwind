@@ -19,10 +19,16 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 	const { isLoaded, isSignedIn, user } = useUser();
 	const [selectedSiteId, setSelectedSiteId] = useState<number>(0);
 	const isClockedIn = user?.unsafeMetadata.isClockedIn as boolean;
+
 	const [shiftId, setShiftId] = useState(user?.unsafeMetadata.shiftLoggerId as number);
+
 	const workerId = user?.unsafeMetadata.id as number;
 
 	const handleSubmitClockIn = async (e: React.FormEvent<HTMLFormElement>) => {
+		const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
+		// const workerId = user?.unsafeMetadata.id as number;
+		console.log("shiftLoggerId", shiftLoggerId);
+		console.log("workerId", workerId);
 		e.preventDefault();
 		try {
 			const response = await fetch('https://hmsapi.herokuapp.com/shiftLogger', {
@@ -31,31 +37,40 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					workerId: workerId,
-					locationId: selectedSiteId,
+					workerId: 2,
+					locationId: 91,
 					isActive: true,
+					updatedHouses: 0,
+					updatedHousesFinal: 0,
 					startingDate: DateTime.now().setZone('America/Toronto').toISO()
 				})
 			});
 
-			const responseData = await response.json();
-			const shifLoggerId = responseData.ShiftLoggerId;
-			const updateUser = user?.update({
-				unsafeMetadata: { "id": workerId, "isClockedIn": true, "shiftLoggerId": shifLoggerId }
-			});
-
-			alert("Successfully clocked in.");
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+
+			const responseData = await response.json();
+			const newShiftLoggerId = responseData.ShiftLoggerId;
+
+			console.log("Response Data:", responseData);
+			console.log("Shift Logger ID after API call:", newShiftLoggerId);
+
+			const updateUser = await user?.update({
+				unsafeMetadata: { "id": workerId, "isClockedIn": true, "shiftLoggerId": newShiftLoggerId }
+			});
+
+			alert("Successfully clocked in.");
+
 		} catch (error) {
 			alert("Failed to clock in. Please try again.");
-			console.log(`Failed to create a shift log due to ${error}`);
-			console.log(user?.unsafeMetadata.id);
-			console.log(selectedSiteId);
+			console.log("Failed to create a shift log due to ", error);
+			console.log("User ID at error:", user?.unsafeMetadata.id);
+			console.log("Selected Site ID at error:", selectedSiteId);
 			console.error(error);
 		}
 	};
+
 
 	useEffect(() => {
 		setSelectedSiteId
@@ -64,7 +79,7 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 	if (!isLoaded || !isSignedIn) {
 		return null;
 	}
-
+	console.log("workerId", workerId);
 	return (
 		<div className="flex  flex-col items-center mb-8 mt-8">
 			{user?.unsafeMetadata.isClockedIn ? (
