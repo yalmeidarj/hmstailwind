@@ -11,6 +11,7 @@ import ShiftManager from './components/ShiftManager';
 import Loading from './components/Loading';
 import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
+import ClientWrapper from './components/ClientWrapper';
 import Locations from './components/Locations';
 import { ai } from 'drizzle-orm/column.d-aa4e525d';
 // import LocationCard from './components/LocationCard';
@@ -147,6 +148,7 @@ export default async function Home() {
           <h2 className="text-gray-400 mb-4">Start time: {formattedStartTime}</h2>
 
           <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
+          {/* <ClientWrapper /> */}
           <Locations />
         </div>
       </main>

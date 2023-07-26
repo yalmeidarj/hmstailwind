@@ -25,9 +25,9 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 	const workerId = user?.unsafeMetadata.id as number;
 
 	const handleSubmitClockIn = async (e: React.FormEvent<HTMLFormElement>) => {
-		const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
+		// const shiftLoggerId = user?.unsafeMetadata.shiftLoggerId as number;
 		// const workerId = user?.unsafeMetadata.id as number;
-		console.log("shiftLoggerId", shiftLoggerId);
+		// console.log("shiftLoggerId", shiftLoggerId);
 		console.log("workerId", workerId);
 		e.preventDefault();
 		try {
@@ -37,8 +37,9 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					workerId: 2,
-					locationId: 91,
+					workerId: workerId,
+					// workerId: user?.unsafeMetadata.id as number,
+					locationId: selectedSiteId,
 					isActive: true,
 					updatedHouses: 0,
 					updatedHousesFinal: 0,
@@ -89,16 +90,18 @@ const ShiftManager: React.FC<ShiftManagerProps> = ({ sites }) => {
 					<h1 className="text-gray-600 text-lg mb-1">Clock In</h1>
 					<p className="text-sm">Please select a site to clock in.</p>
 					<select
-						value={0}
+						value={selectedSiteId}
 						onChange={({ target: { value } }) => setSelectedSiteId(Number(value))}
 						className="w-full border text-gray-500 border-gray-300 rounded-md mt-2 mb-2 p-2"
 					>
+						<option value="0">Please select a site</option>
 						{sites?.map((site) => (
 							<option className='text-gray-500' key={site.id} value={site.id}>
 								{site.name}
 							</option>
 						))}
 					</select>
+
 					<form onSubmit={handleSubmitClockIn}>
 						<button
 							type="submit"

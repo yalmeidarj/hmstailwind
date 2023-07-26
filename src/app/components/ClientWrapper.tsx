@@ -37,13 +37,15 @@ function ClientWrapper() {
 
 	async function handleNextPage(e: { preventDefault: () => void }) {
 		e.preventDefault()
-		startTransition(() => {
-			fetchLocations(page + 1, 20)
-				.then(newLocations => {
-					setPage(page + 1)
-					setLocations(newLocations)
-				})
-		})
+		if (page <= 1) {
+			startTransition(() => {
+				fetchLocations(page + 1, 20)
+					.then(newLocations => {
+						setPage(page + 1)
+						setLocations(newLocations)
+					})
+			})
+		}
 	}
 
 	return (
