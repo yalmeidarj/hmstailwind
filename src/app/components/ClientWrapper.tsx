@@ -75,7 +75,7 @@ function ClientWrapper() {
 									</h2>
 									<div className="flex items-center justify-center">
 										<p className="text-sm text-gray-500 mt-1">
-											{location.neighborhood} | Streets:{" "}
+											{/* {location.neighborhood} | Streets:{" "} */}
 											{getNumberOfStreets(location.id)} | Houses:{" "}
 											{getNumberOfHouses(location.id)}
 										</p>
