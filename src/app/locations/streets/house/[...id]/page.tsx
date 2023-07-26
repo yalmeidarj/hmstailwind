@@ -29,6 +29,7 @@ interface House {
     name: string;
     lastName: string;
     statusAttempt: string;
+    consent: string;
     email: string;
     phone: string;
     notes: string;
@@ -86,6 +87,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                 name: house.name || " ",
                                 lastName: house.lastName || " ",
                                 statusAttempt: house.statusAttempt || " ",
+                                consent: house.consent || " ",
                                 email: house.email || " ",
                                 phone: house.phone || " ",
                                 salesForceNotes: house.salesForceNotes || " ",
