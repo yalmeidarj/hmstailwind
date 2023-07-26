@@ -6,20 +6,29 @@ import { location, street, shiftLogger, worker, house } from '../../drizzle/sche
 import { DateTime, Duration } from 'luxon';
 import db from '../lib/utils/db';
 
-import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, Suspense, useState } from 'react';
+import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, SetStateAction, Suspense, useEffect, useState } from 'react';
 import ShiftManager from './components/ShiftManager';
 import Loading from './components/Loading';
 import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
+import Locations from './components/Locations';
 // import LocationCard from './components/LocationCard';
 
 
-
-async function getLocationsDataDrizzle() {
+async function getLocationsDataDrizzle(pageNumber, pageSize) {
   // Use the drizzle-orm to get the data from the database
-  const locations = await db.select().from(location).execute();
+  const offset = (pageNumber - 1) * pageSize;  // Calculate the offset
+
+  const locations = await db.select().from(location).limit(pageSize).offset(offset).execute();
+
   return locations;
 }
+
+// async function getLocationsDataDrizzle() {
+//   // Use the drizzle-orm to get the data from the database
+//   const locations = await db.select().from(location).execute();
+//   return locations;
+// }
 
 async function getNumberOfStreets(locationId: any) {
   // Use drizzle-orm to get the number of streets for each location
@@ -27,6 +36,7 @@ async function getNumberOfStreets(locationId: any) {
   return streets.length;
 
 }
+
 
 async function getNumberOfHouses(locationId: any) {
   // Use drizzle-orm to get the number of streets for each location
@@ -82,23 +92,10 @@ async function getShiftLoggerData(locationId: any) {
   return workers;
 }
 
-// async function calculateShiftDurationAndPace(shiftData: ShiftData) {
-//   const now = DateTime.now().setZone('America/Toronto').toMillis() / 1000 / 60 / 60;
-//   const shiftStartTime = DateTime.fromISO(shiftData.startingDate, { zone: 'America/Toronto' }).toMillis() / 1000 / 60 / 60;
-//   const shiftDuration = now - shiftStartTime;
-//   const userPace = shiftData.updatedHousesFinal / shiftDuration;
-
-//   // Returns the shift duration in hours and pace with 2 decimal places
-//   return {
-//     shiftDuration,
-//     userPace: Number(userPace.toFixed(2))
-//   };
-// }
-
 
 
 export default async function Home() {
-  const data = await getLocationsDataDrizzle();
+  const data = await getLocationsDataDrizzle(1, 20);
   const user = await currentUser();
 
   const id = user?.unsafeMetadata.id as number;
@@ -133,61 +130,10 @@ export default async function Home() {
     }
 
 
-    // const userPace = shiftDuration / updatedHouses;
-
-    // const userPaceString = userPace;
-
     if (!user) return <div className="text-blue-900">Not logged in</div>;
     return (
       <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6 w-full">
-          <h1 className="text-blue-900 text-2xl mb-4">Pace: ~{userPace.toFixed(0)} minutes</h1>
-          <h2 className="text-blue-900 mb-2">
-            FINAL ANSWER: {updatedHousesFinal}{" "}
-            {/* <span className="text-sm text-gray-400">FINAL ANSWER</span> */}
-          </h2>
-          <h2 className="text-blue-900 mb-2">Nobody home: {updatedHouses}</h2>
-          <h2 className="text-gray-600 mb-2">
-            Shift duration: {shiftDurationInMinutes.toFixed(2)} minutes
-          </h2>
-          <h2 className="text-gray-400 mb-4">Start time: {formattedStartTime}</h2>
-
-          <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.map((location) => (
-              <Suspense fallback={<SiteLoadingSkeleton />} key={location.id}>
-                <li className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
-                  <Link href={`/locations/${location.id}`}>
-                    <div className="block">
-                      <div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
-                        <h2 className="text-xs font-semibold text-teal-500">
-                          Priority
-                        </h2>
-                        <span className="text-xs font-semibold text-teal-500">
-                          {" "}
-                          {location.priorityStatus}
-                        </span>
-                      </div>
-                      <h2 className="text-blue-700 text-center text-lg font-semibold mb-1">
-                        {location.name}
-                      </h2>
-                      <div className="flex items-center justify-center">
-                        <p className="text-sm text-gray-500 mt-1">
-                          {location.neighborhood} | Streets:{" "}
-                          {getNumberOfStreets(location.id)} | Houses:{" "}
-                          {getNumberOfHouses(location.id)}
-                        </p>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Currently working: {getShiftLoggerData(location.id)}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              </Suspense>
-            ))}
-          </ul>
-        </div>
+        <Locations />
       </main>
 
     );
@@ -196,18 +142,5 @@ export default async function Home() {
     // handle this error appropriately
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-//   );
-// }
 
 

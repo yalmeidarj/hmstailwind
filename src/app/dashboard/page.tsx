@@ -132,7 +132,7 @@ export default async function page() {
         },
         {
             header: 'Street',
-            accessorKey: 'street.name',
+            accessorKey: 'Street.name',
             footer: 'Street',
         },
         {
