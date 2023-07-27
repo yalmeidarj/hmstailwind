@@ -35,7 +35,7 @@ interface House {
     notes: string;
     salesForceNotes: string;
     type: string;
-    streetNumber: string;
+    streetNumber: number;
 }
 
 type Params = {
