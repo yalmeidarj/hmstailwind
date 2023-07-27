@@ -65,7 +65,7 @@ export default async function Locations() {
 
 			{location.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
 				<Suspense fallback={<h1>Loading</h1>} key={location.id}>
-					<li className="p-4 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb-4 rounded-md shadow-md">
+					<li className="p-4 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb- rounded-md shadow-md">
 						<Link href={`/locations/${location.id}`}>
 							<div className="block">
 								<div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
@@ -83,7 +83,7 @@ export default async function Locations() {
 								<div className="flex items-center justify-center">
 									<p className="text-sm text-gray-500 mt-1">
 										{/* {location.neighborhood} | Streets:{" "} */}
-										{getNumberOfStreets(location.nei)} | Houses:{" "}
+										{getNumberOfStreets(location.id)} | Houses:{" "}
 										{getNumberOfHouses(location.id)}
 									</p>
 								</div>
