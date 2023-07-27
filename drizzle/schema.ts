@@ -3,45 +3,23 @@ import {
   pgEnum,
   pgSchema,
   AnyPgColumn,
-  varchar,
-  timestamp,
-  text,
-  integer,
-  serial,
   foreignKey,
+  serial,
+  integer,
+  text,
+  timestamp,
+  varchar,
   boolean,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
+
 import { sql } from "drizzle-orm";
-
-export const prismaMigrations = pgTable("_prisma_migrations", {
-  id: varchar("id", { length: 36 }).primaryKey().notNull(),
-  checksum: varchar("checksum", { length: 64 }).notNull(),
-  finishedAt: timestamp("finished_at", { withTimezone: true, mode: "string" }),
-  migrationName: varchar("migration_name", { length: 255 }).notNull(),
-  logs: text("logs"),
-  rolledBackAt: timestamp("rolled_back_at", {
-    withTimezone: true,
-    mode: "string",
-  }),
-  startedAt: timestamp("started_at", { withTimezone: true, mode: "string" })
-    .defaultNow()
-    .notNull(),
-  appliedStepsCount: integer("applied_steps_count").default(0).notNull(),
-});
-
-export const location = pgTable("Location", {
-  id: serial("id").primaryKey().notNull(),
-  name: text("name"),
-  neighborhood: text("neighborhood").default("to be verified").notNull(),
-  priorityStatus: integer("priorityStatus").default(1).notNull(),
-});
 
 export const house = pgTable("House", {
   id: serial("id").primaryKey().notNull(),
-  streetNumber: text("streetNumber").notNull(),
+  streetNumber: integer("streetNumber").notNull(),
   lastName: text("lastName"),
   name: text("name"),
   notes: text("notes"),
@@ -64,6 +42,29 @@ export const house = pgTable("House", {
   lastUpdatedBy: text("lastUpdatedBy"),
   statusAttempt: text("statusAttempt"),
   consent: text("consent"),
+});
+
+export const prismaMigrations = pgTable("_prisma_migrations", {
+  id: varchar("id", { length: 36 }).primaryKey().notNull(),
+  checksum: varchar("checksum", { length: 64 }).notNull(),
+  finishedAt: timestamp("finished_at", { withTimezone: true, mode: "string" }),
+  migrationName: varchar("migration_name", { length: 255 }).notNull(),
+  logs: text("logs"),
+  rolledBackAt: timestamp("rolled_back_at", {
+    withTimezone: true,
+    mode: "string",
+  }),
+  startedAt: timestamp("started_at", { withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  appliedStepsCount: integer("applied_steps_count").default(0).notNull(),
+});
+
+export const location = pgTable("Location", {
+  id: serial("id").primaryKey().notNull(),
+  name: text("name"),
+  neighborhood: text("neighborhood").default("to be verified").notNull(),
+  priorityStatus: integer("priorityStatus").default(1).notNull(),
 });
 
 export const street = pgTable("Street", {

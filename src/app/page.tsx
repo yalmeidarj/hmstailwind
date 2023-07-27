@@ -135,22 +135,20 @@ export default async function Home() {
     if (!user) return <div className="text-blue-900">Not logged in</div>;
     return (
       <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6 w-full">
-          <h1 className="text-blue-900 text-2xl mb-4">Pace: ~{userPace.toFixed(0)} minutes</h1>
-          <h2 className="text-blue-900 mb-2">
-            FINAL ANSWER: {updatedHousesFinal}{" "}
-            {/* <span className="text-sm text-gray-400">FINAL ANSWER</span> */}
-          </h2>
-          <h2 className="text-blue-900 mb-2">Nobody home: {updatedHouses}</h2>
-          <h2 className="text-gray-600 mb-2">
-            Shift duration: {shiftDurationInMinutes.toFixed(2)} minutes
-          </h2>
-          <h2 className="text-gray-400 mb-4">Start time: {formattedStartTime}</h2>
+        <h1 className="text-blue-900 text-2xl mb-4">Pace: ~{userPace.toFixed(0)} minutes</h1>
+        <h2 className="text-blue-900 mb-2">
+          FINAL ANSWER: {updatedHousesFinal}{" "}
+          {/* <span className="text-sm text-gray-400">FINAL ANSWER</span> */}
+        </h2>
+        <h2 className="text-blue-900 mb-2">Nobody home: {updatedHouses}</h2>
+        <h2 className="text-gray-600 mb-2">
+          Shift duration: {shiftDurationInMinutes.toFixed(2)} minutes
+        </h2>
+        <h2 className="text-gray-400 mb-4">Start time: {formattedStartTime}</h2>
 
-          <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
-          {/* <ClientWrapper /> */}
-          <Locations />
-        </div>
+        <h1 className="text-blue-900 text-4xl font-semibold mb-6">Sites</h1>
+        {/* <ClientWrapper /> */}
+        <Locations />
       </main>
     );
   } else {

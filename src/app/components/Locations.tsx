@@ -61,18 +61,11 @@ export default async function Locations() {
 	const location = await getLocationsDataDrizzle()
 
 	return (
-		<div className="flex flex-col items-center justify-center w-full py-8 px-6">
-
-			{/* <button className="font-semibold text-black" type="submit" disabled={isPending}>
-					Next Page
-				</button>
-				<button onClick={handlePrevPage} className="font-semibold text-black" type="submit" disabled={isPending}>
-					Previous Page
-				</button> */}
+		<div className="flex flex-row flex-wrap items-center justify-around m-4 w-full py-8 px-6">
 
 			{location.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
 				<Suspense fallback={<h1>Loading</h1>} key={location.id}>
-					<li className="p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-md shadow-md">
+					<li className="p-4 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb-4 rounded-md shadow-md">
 						<Link href={`/locations/${location.id}`}>
 							<div className="block">
 								<div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
@@ -90,7 +83,7 @@ export default async function Locations() {
 								<div className="flex items-center justify-center">
 									<p className="text-sm text-gray-500 mt-1">
 										{/* {location.neighborhood} | Streets:{" "} */}
-										{getNumberOfStreets(location.id)} | Houses:{" "}
+										{getNumberOfStreets(location.nei)} | Houses:{" "}
 										{getNumberOfHouses(location.id)}
 									</p>
 								</div>

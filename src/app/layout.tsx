@@ -36,18 +36,10 @@ const Header = () => (
       </div>
     </Link>
     <div className="flex justify-between items-center w-full md:hidden">
-      <div className="flex items-center space-x-4 text-black">
-        <SignedOut>
-          <Link className="text-black font-medium hover:underline" href="/sign-in">Sign in</Link>
-        </SignedOut>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
-      </div>
       <nav className="w-full py-4 border-t border-gray-200 flex items-center justify-between md:hidden">
         <Link href="/">
           <span className="text-sm text-gray-800 hover:text-blue-600 font-medium cursor-pointer">
-            Locations
+            Sites
           </span>
         </Link>
         <Link href="/dashboard">
@@ -61,11 +53,19 @@ const Header = () => (
           </span>
         </Link>
       </nav>
+      <div className="flex items-center space-x-4 m-2 text-black">
+        <SignedOut>
+          <Link className="text-black font-medium hover:underline" href="/sign-in">Sign in</Link>
+        </SignedOut>
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+      </div>
     </div>
     <nav className="hidden md:flex items-center space-x-4">
       <Link href="/">
         <span className="text-sm text-gray-800 hover:text-blue-600 font-medium cursor-pointer">
-          Locations
+          Sites
         </span>
       </Link>
       <Link href="/dashboard">
@@ -75,7 +75,7 @@ const Header = () => (
       </Link>
       <Link href="/infolocation">
         <span className="text-sm text-gray-800 hover:text-blue-600 font-medium cursor-pointer">
-          Site Info
+          Sites Info
         </span>
       </Link>
     </nav>

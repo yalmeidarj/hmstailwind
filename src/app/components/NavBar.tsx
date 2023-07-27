@@ -38,7 +38,7 @@ const Navbar = () => {
                 <div className="text-sm lg:flex-grow">
                     <Link href="/">
                         <span className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4 cursor-pointer">
-                            Locations
+                            Sites
                         </span>
                     </Link>
                     <Link href="/dashboard">
