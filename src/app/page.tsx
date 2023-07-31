@@ -17,14 +17,14 @@ import { ai } from 'drizzle-orm/column.d-aa4e525d';
 // import LocationCard from './components/LocationCard';
 
 
-async function getLocationsDataDrizzle(pageNumber: number, pageSize: number) {
-  // Use the drizzle-orm to get the data from the database
-  const offset = (pageNumber - 1) * pageSize;  // Calculate the offset
+// async function getLocationsDataDrizzle(pageNumber: number, pageSize: number) {
+//   // Use the drizzle-orm to get the data from the database
+//   const offset = (pageNumber - 1) * pageSize;  // Calculate the offset
 
-  const locations = await db.select().from(location).limit(pageSize).offset(offset).execute();
+//   const locations = await db.select().from(location).limit(pageSize).offset(offset).execute();
 
-  return locations;
-}
+//   return locations;
+// }
 
 // async function getLocationsDataDrizzle() {
 //   // Use the drizzle-orm to get the data from the database
@@ -32,19 +32,21 @@ async function getLocationsDataDrizzle(pageNumber: number, pageSize: number) {
 //   return locations;
 // }
 
-async function getNumberOfStreets(locationId: any) {
-  // Use drizzle-orm to get the number of streets for each location
-  const streets = await db.select().from(street).where(eq(street.locationId, locationId)).execute();
-  return streets.length;
+// async function getNumberOfStreets(locationId: any) {
+//   // Use drizzle-orm to get the number of streets for each location
+//   const streets = await db.select().from(street).where(eq(street.locationId, locationId)).execute();
+//   return streets.length;
 
-}
+// }
 
 
-async function getNumberOfHouses(locationId: any) {
-  // Use drizzle-orm to get the number of streets for each location
-  const houses = await db.select().from(house).where(eq(house.locationId, locationId)).execute();
-  return houses.length;
-}
+// async function getNumberOfHouses(locationId: any) {
+//   // Use drizzle-orm to get the number of streets for each location
+//   const houses = await db.select().from(house).where(eq(house.locationId, locationId)).execute();
+//   return houses.length;
+// }
+
+
 type ShiftData = {
   locationId: number;
   shiftLoggerId: number;
@@ -74,30 +76,31 @@ async function getPaceFinal(shiftLoggerId: any) {
 }
 
 
-async function getShiftLoggerData(locationId: any) {
-  const dshiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.locationId, locationId))).execute();
+// async function getShiftLoggerData(locationId: any) {
+//   const dshiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.locationId, locationId))).execute();
 
-  const workers = await Promise.all(dshiftLoggers.map(async (logger: { workerId: any; }) => {
-    const workerData = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
-    return (
-      <>
-        {
-          workerData.map((worker: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }, index: any) => (
-            <Suspense fallback={<p className='text-black'>Loading</p>}>
-              <span className="text-blue-500 text-center mr-2" > {worker.name}</span>
-            </Suspense>
-          ))
-        }
-      </>
-    );
-  }));
-  return workers;
-}
+//   const workers = await Promise.all(dshiftLoggers.map(async (logger: { workerId: any; }) => {
+//     const workerData = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
+//     return (
+//       <>
+//         {
+//           workerData.map((worker: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }, index: any) => (
+//             <Suspense fallback={<p className='text-black'>Loading</p>}>
+//               <span className="text-blue-500 text-center mr-2" > {worker.name}</span>
+//             </Suspense>
+//           ))
+//         }
+//       </>
+//     );
+//   }));
+//   return workers;
+// }
 
 
 
 export default async function Home() {
-  const data = await getLocationsDataDrizzle(1, 20);
+  // const data = await getLocationsDataDrizzle();
+  // const data = await getLocationsDataDrizzle(1, 20);
   const user = await currentUser();
 
   const id = user?.unsafeMetadata.id as number;

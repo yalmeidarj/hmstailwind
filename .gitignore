@@ -36,3 +36,6 @@ next-env.d.ts
 
 # other
 py.py
+
+FormWrapper.tsx
+MyDocument .tsx

@@ -15,6 +15,9 @@ import {
 	QueryClientProvider,
 	useQuery,
 } from '@tanstack/react-query';
+import DownloadLink from './PDFDownloadLink';
+import { useUser } from "@clerk/nextjs";
+
 
 type ShiftLoggerApiResponse = {
 	data: Array<ShiftLogger>;
@@ -24,17 +27,22 @@ type ShiftLoggerApiResponse = {
 };
 
 type ShiftLogger = {
-	ShiftLoggerId: number;
-	workerId: number;
-	locationId: number;
+	// ShiftLoggerId: number;
+	// workerId: number;
+	// locationId: number;
+	// startingDate: string;
+	// finishedDate: string;
+	// updatedHouses: number | null;
+	// updatedHousesFinal: number | null;
+	// pace: number | null;
+	// paceFinal: number | null;
+	// userProviderUserId: number | null;
+	// isActive: boolean;
+	workerName: string;
+	locationName: string;
 	startingDate: string;
 	finishedDate: string;
-	updatedHouses: number | null;
-	updatedHousesFinal: number | null;
-	pace: number | null;
-	paceFinal: number | null;
-	userProviderUserId: number | null;
-	isActive: boolean;
+	shiftNotes: string;
 };
 
 const Example = () => {
@@ -48,6 +56,8 @@ const Example = () => {
 		pageSize: 10,
 	});
 
+	const { isLoaded, isSignedIn, user } = useUser();
+	const workerId = user?.unsafeMetadata.id;
 	const { data, isError, isFetching, isLoading, refetch } =
 		useQuery<ShiftLoggerApiResponse>({
 			queryKey: [
@@ -60,7 +70,7 @@ const Example = () => {
 			],
 			queryFn: async () => {
 				const fetchURL = new URL(
-					'https://hmsapi.herokuapp.com/shiftLogger',
+					'https://hmsapi.herokuapp.com/pshift/2',
 				);
 				fetchURL.searchParams.set(
 					'start',
@@ -86,16 +96,12 @@ const Example = () => {
 	const columns = useMemo<MRT_ColumnDef<ShiftLogger>[]>(
 		() => [
 			{
-				accessorKey: 'ShiftLoggerId',
-				header: 'Shift Logger ID',
+				accessorKey: 'workerName',
+				header: 'Name',
 			},
 			{
-				accessorKey: 'workerId',
-				header: 'Worker ID',
-			},
-			{
-				accessorKey: 'locationId',
-				header: 'Location ID',
+				accessorKey: 'locationName',
+				header: 'Site',
 			},
 			{
 				accessorKey: 'startingDate',
@@ -106,73 +112,78 @@ const Example = () => {
 				header: 'Finished Date',
 			},
 			{
-				accessorKey: 'updatedHouses',
-				header: 'Updated Houses',
+				accessorKey: 'shiftNotes',
+				header: 'Notes',
 			},
-			{
-				accessorKey: 'updatedHousesFinal',
-				header: 'Updated Houses Final',
-			},
-			{
-				accessorKey: 'pace',
-				header: 'Pace',
-			},
-			{
-				accessorKey: 'paceFinal',
-				header: 'Pace Final',
-			},
-			{
-				accessorKey: 'userProviderUserId',
-				header: 'User Provider User ID',
-			},
-			{
-				accessorKey: 'isActive',
-				header: 'Is Active',
-			},
+			// {
+			// 	accessorKey: 'updatedHouses',
+			// 	header: 'Updated Houses',
+			// },
+			// {
+			// 	accessorKey: 'updatedHousesFinal',
+			// 	header: 'Updated Houses Final',
+			// },
+			// {
+			// 	accessorKey: 'pace',
+			// 	header: 'Pace',
+			// },
+			// {
+			// 	accessorKey: 'paceFinal',
+			// 	header: 'Pace Final',
+			// },
+			// {
+			// 	accessorKey: 'userProviderUserId',
+			// 	header: 'User Provider User ID',
+			// },
+			// {
+			// 	accessorKey: 'isActive',
+			// 	header: 'Is Active',
+			// },
 		],
 		[],
 	);
 
-
-
 	return (
-		<MaterialReactTable
-			columns={columns}
-			data={data?.data ?? []} //data is undefined on first render
-			initialState={{ showColumnFilters: true }}
-			manualFiltering
-			manualPagination
-			manualSorting
-			muiToolbarAlertBannerProps={
-				isError
-					? {
-						color: 'error',
-						children: 'Error loading data',
-					}
-					: undefined
-			}
-			onColumnFiltersChange={setColumnFilters}
-			onGlobalFilterChange={setGlobalFilter}
-			onPaginationChange={setPagination}
-			onSortingChange={setSorting}
-			renderTopToolbarCustomActions={() => (
-				<Tooltip arrow title="Refresh Data">
-					<IconButton onClick={() => refetch()}>
-						<RefreshIcon />
-					</IconButton>
-				</Tooltip>
-			)}
-			rowCount={data?.meta?.totalRowCount ?? 0}
-			state={{
-				columnFilters,
-				globalFilter,
-				isLoading,
-				pagination,
-				showAlertBanner: isError,
-				showProgressBars: isFetching,
-				sorting,
-			}}
-		/>
+		<div>
+			<MaterialReactTable
+				columns={columns}
+				data={data?.data ?? []} //data is undefined on first render
+				initialState={{ showColumnFilters: true }}
+				manualFiltering
+				manualPagination
+				manualSorting
+				muiToolbarAlertBannerProps={
+					isError
+						? {
+							color: 'error',
+							children: 'Error loading data',
+						}
+						: undefined
+				}
+				onColumnFiltersChange={setColumnFilters}
+				onGlobalFilterChange={setGlobalFilter}
+				onPaginationChange={setPagination}
+				onSortingChange={setSorting}
+				renderTopToolbarCustomActions={() => (
+					<Tooltip arrow title="Refresh Data">
+						<IconButton onClick={() => refetch()}>
+							<RefreshIcon />
+						</IconButton>
+					</Tooltip>
+				)}
+				rowCount={data?.meta?.totalRowCount ?? 0}
+				state={{
+					columnFilters,
+					globalFilter,
+					isLoading,
+					pagination,
+					showAlertBanner: isError,
+					showProgressBars: isFetching,
+					sorting,
+				}}
+			/>
+			<DownloadLink data={data?.data ?? []} />
+		</div>
 	);
 };
 

@@ -141,7 +141,13 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.name = name;
         data.lastName = lastName;
         data.statusAttempt = statusAttempt;
+        data.statusAttempt = statusAttempt;
         data.consent = consent;
+        // if (data.statusAttempt === "Consent Final") {
+        //     data.statusAttempt = consent;
+        // } else {
+        //     data.statusAttempt = statusAttempt;
+        // }
         data.email = email;
         data.phone = phone;
         data.type = type;
@@ -285,6 +291,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                                     <MenuItem value={"Door Knock Attempt 4"}>Door Knock Attempt 4</MenuItem>
                                     <MenuItem value={"Door Knock Attempt 5"}>Door Knock Attempt 5</MenuItem>
                                     <MenuItem value={"Door Knock Attempt 6"}>Door Knock Attempt 6</MenuItem>
+                                    <MenuItem value={"Consent Final"}>Consent Final</MenuItem>
                                     <MenuItem value={"engineer visit required"}>Engineer Visit Required</MenuItem>
                                     <MenuItem value={"Home Does Not Exist"}>Home Does Not Exist</MenuItem>
 
@@ -303,8 +310,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                                     fullWidth
                                     onChange={(e) => setConsent(e.target.value)}
                                 >
-                                    <MenuItem value={"Consent Final Yes"}>Consent Final Yes</MenuItem>
-                                    <MenuItem value={"Consent Final No"}>Consent Final No</MenuItem>
+                                    <MenuItem value={"Yes"}>Consent Final Yes</MenuItem>
+                                    <MenuItem value={"No"}>Consent Final No</MenuItem>
 
                                 </Select>
                             )}
@@ -383,3 +390,6 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
     );
 };
 export default SimpleForm;
+
+
+

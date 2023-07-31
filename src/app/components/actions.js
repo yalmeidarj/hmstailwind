@@ -60,6 +60,17 @@ export async function getShiftLoggerData(locationId) {
   return workers;
 }
 
+export async function getPersonalShiftData(workerId) {
+  const shiftLoggers = await db.query.shiftLogger.findMany({
+    where: eq(shiftLogger.workerId, workerId),
+    with: {
+      worker: true,
+    },
+  });
+
+  return shiftLoggers;
+}
+
 export async function getNumberOfStreets(locationId) {
   // Use drizzle-orm to get the number of streets for each location
   return db
