@@ -4,6 +4,7 @@ import Link from 'next/link.js'
 import db from '../../lib/utils/db'
 import { eq, and } from 'drizzle-orm'
 import { street, house, location, shiftLogger, worker } from '../../../drizzle/schema'
+import PaginationControls from './PaginationControls'
 // import SiteLoadingSkeleton from './SiteLoadingSkeleton.jsx'
 
 type LocationType = {
@@ -13,9 +14,15 @@ type LocationType = {
 	priorityStatus: number;
 };
 
-async function getLocationsDataDrizzle() {
+async function getLocationsDataDrizzle(number: string, size: string) {
+
+	const pageNumber = parseInt(number);
+	const pageSize = parseInt(size);
 	// Use the drizzle-orm to get the data from the database
-	const locations = await db.select().from(location).execute();
+	const offset = (pageNumber - 1) * pageSize;  // Calculate the offset
+
+	const locations = await db.select().from(location).limit(pageSize).offset(offset).execute();
+
 	return locations;
 }
 
@@ -35,34 +42,44 @@ async function getNumberOfHouses(locationId: any) {
 	return houses.length;
 }
 
-async function getShiftLoggerData(locationId: any) {
-	const dshiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.locationId, locationId))).execute();
+// async function getShiftLoggerData(locationId: any) {
+// 	const dshiftLoggers = await db.select().from(shiftLogger).where(and(eq(shiftLogger.isActive, true), eq(shiftLogger.locationId, locationId))).execute();
 
-	const workers = await Promise.all(dshiftLoggers.map(async (logger: { workerId: any; }) => {
-		const workerData = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
-		return (
-			<>
-				{
-					workerData.map((worker: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }, index: any) => (
-						<Suspense fallback={<p className='text-black'>Loading</p>}>
-							<span className="text-blue-500 text-center mr-2" > {worker.name}</span>
-						</Suspense>
-					))
-				}
-			</>
-		);
-	}));
-	return workers;
-}
+// 	const workers = await Promise.all(dshiftLoggers.map(async (logger: { workerId: any; }) => {
+// 		const workerData = await db.select().from(worker).where(eq(worker.id, logger.workerId)).execute();
+// 		return (
+// 			<>
+// 				{
+// 					workerData.map((worker: { name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }, index: any) => (
+// 						<Suspense fallback={<p className='text-black'>Loading</p>}>
+// 							<span className="text-blue-500 text-center mr-2" > {worker.name}</span>
+// 						</Suspense>
+// 					))
+// 				}
+// 			</>
+// 		);
+// 	}));
+// 	return workers;
+// }
 
 
 
-export default async function Locations() {
-	const location = await getLocationsDataDrizzle()
+export default async function Locations({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string | undefined }
+}) {
+
+	const page = searchParams['page'] ?? '1'
+	const per_page = searchParams['per_page'] ?? '5'
+
+	const start = (Number(page) - 1) * Number(per_page) // 0, 5, 10 ...
+	const end = start + Number(per_page)  // 5, 10, 15 ...
+
+	const entries = (await getLocationsDataDrizzle(page, per_page))
 
 	return (
 		<div className="flex flex-row flex-wrap items-center justify-around m-4 w-full py-8 px-6">
-
 			{location.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
 				<Suspense fallback={<h1>Loading</h1>} key={location.id}>
 					<li className="p-4 mb-2 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb- rounded-md shadow-md">
@@ -87,15 +104,15 @@ export default async function Locations() {
 										{getNumberOfHouses(location.id)}
 									</p>
 								</div>
-								<p className="text-sm text-gray-500 mt-1">
+								{/* <p className="text-sm text-gray-500 mt-1">
 									Currently working: {getShiftLoggerData(location.id)}
-								</p>
+								</p> */}
 							</div>
 						</Link>
 					</li>
 				</Suspense>
 			))}
-
+			<PaginationControls />
 		</div>
 	)
 }
