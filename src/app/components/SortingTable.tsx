@@ -15,7 +15,7 @@ import {
 	QueryClientProvider,
 	useQuery,
 } from '@tanstack/react-query';
-import DownloadLink from './PDFDownloadLink';
+// import DownloadLink from './PDFDownloadLink';
 import { useUser } from "@clerk/nextjs";
 
 
@@ -182,7 +182,7 @@ const Example = () => {
 					sorting,
 				}}
 			/>
-			<DownloadLink data={data?.data ?? []} />
+			{/* <DownloadLink data={data?.data ?? []} /> */}
 		</div>
 	);
 };
