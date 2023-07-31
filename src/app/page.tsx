@@ -186,7 +186,7 @@ export default async function Home({
           hasNextPage={end < listSize}
           hasPrevPage={start > 0}
         />
-        {entries.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
+        {entries.map((location: { id: Key | null | undefined; priorityStatus: string | number | boolean | undefined; }) => (
           <Suspense fallback={<h1>Loading</h1>} key={location.id}>
             <li className="p-4 mb-2 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb- rounded-md shadow-md">
               <Link href={`/locations/${location.id}`}>
