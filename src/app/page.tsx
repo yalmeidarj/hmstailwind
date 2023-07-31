@@ -12,7 +12,6 @@ import Loading from './components/Loading';
 import SiteLoadingSkeleton from './components/SiteLoadingSkeleton';
 import UserInfo from './components/UserInfo';
 import ClientWrapper from './components/ClientWrapper';
-import Locations from './components/Locations';
 import { ai } from 'drizzle-orm/column.d-aa4e525d';
 import PaginationControls from './components/PaginationControls';
 // import LocationCard from './components/LocationCard';
