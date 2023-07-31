@@ -186,42 +186,45 @@ export default async function Home({
           hasNextPage={end < listSize}
           hasPrevPage={start > 0}
         />
-        {entries.map((location: {
-          id: Key | null | undefined;
-          priorityStatus: string | number | boolean | null | undefined;
-          name: string | number | boolean | null | undefined;
-        }) => (
-          <Suspense fallback={<h1>Loading</h1>} key={location.id}>
-            <li className="p-4 mb-2 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 mb- rounded-md shadow-md">
-              <Link href={`/locations/${location.id}`}>
-                <div className="block">
-                  <div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
-                    <h2 className="text-xs font-semibold text-teal-500">
-                      Priority
+        <div className='flex flex-row flex-wrap p-2 items-center justify-center m-2'>
+
+          {entries.map((location: {
+            id: Key | null | undefined;
+            priorityStatus: string | number | boolean | null | undefined;
+            name: string | number | boolean | null | undefined;
+          }) => (
+            <Suspense fallback={<h1 className="font-semibold text-black">Loading</h1>} key={location.id}>
+              <li className="p-4 mb-2 bg-gray-100 hover:bg-gray-200 min-w-[300px] transition-colors duration-200 m-1 rounded-md shadow-md">
+                <Link href={`/locations/${location.id}`}>
+                  <div className="block">
+                    <div className="flex items-center justify-center mb-3 bg-white rounded-md shadow-sm p-3">
+                      <h2 className="text-xs font-semibold text-teal-500">
+                        Priority
+                      </h2>
+                      <span className="text-xs font-semibold text-teal-500">
+                        {" "}
+                        {location.priorityStatus}
+                      </span>
+                    </div>
+                    <h2 className="text-blue-700 text-center text-lg font-semibold mb-1">
+                      {location.name}
                     </h2>
-                    <span className="text-xs font-semibold text-teal-500">
-                      {" "}
-                      {location.priorityStatus}
-                    </span>
-                  </div>
-                  <h2 className="text-blue-700 text-center text-lg font-semibold mb-1">
-                    {location.name}
-                  </h2>
-                  <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center">
+                      <p className="text-sm text-gray-500 mt-1">
+                        {/* {location.neighborhood} | Streets:{" "} */}
+                        {getNumberOfStreets(location.id)} | Houses:{" "}
+                        {getNumberOfHouses(location.id)}
+                      </p>
+                    </div>
                     <p className="text-sm text-gray-500 mt-1">
-                      {/* {location.neighborhood} | Streets:{" "} */}
-                      {getNumberOfStreets(location.id)} | Houses:{" "}
-                      {getNumberOfHouses(location.id)}
+                      Currently working: {getShiftLoggerData(location.id)}
                     </p>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Currently working: {getShiftLoggerData(location.id)}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          </Suspense>
-        ))}
+                </Link>
+              </li>
+            </Suspense>
+          ))}
+        </div>
       </main>
     );
   } else {
