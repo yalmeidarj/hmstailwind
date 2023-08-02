@@ -70,39 +70,53 @@ export default async function Page({
     const mainStreetName = houses.previousStreet[0].name;
 
     return (
-        <main className="flex flex-col items-center justify-center w-full py-8 px-6">
-            <Link href={`/locations/${houses.previousStreet[0].locationId}`}>
-                <button className="text-green-600 hover:underline flex items-center space-x-2 mb-4">
-                    Back to Site view
-                </button>
-            </Link>
-            <h1 className="text-4xl font-bold mb-6 text-green-600 flex items-center space-x-2"><IoHomeSharp /> <span>{mainStreetName}</span></h1>
-            <div className="w-full flex flex-wrap items-center justify-center">
-                {houses.streetNumbers.map(house => (
-                    // const type = house.type || 'Not Checked';
-                    // const statusAttempt = house.statusAttempt || '';
-                    <Suspense fallback={<p className='text-black'>Loading</p>}>
-                        <div key={house.id} className={`w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2`}>
-                            <Link href={`/locations/streets/house/${house.id}`} className={`w-full h-full flex flex-col items-start justify-between py-4 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:opacity-70 ${getConditionalClass(house?.statusAttempt ?? " ", house?.consent ?? " ")}`}>
-                                <h1 className="text-lg sm:text-xl text-center items-center p-2 md:text-2xl lg:text-3xl font-bold leading-tight mb-2">{house.streetNumber}</h1>
-                                <div className="flex flex-row w-full justify-around border-t border-b border-white py-2 mb-2">
-                                    <div className='flex flex-col justify-center items-center border-r p-2 border-white'>
-                                        <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-semibold leading-snug mb-2">Attempt:</h2>
-                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{house.statusAttempt}</span>
+        <main className="w-full py-8 px-6">
+            <div className="flex flex-col justify-center items-center max-w-6xl mx-auto">
+                <Link href={`/locations/${houses.previousStreet[0].locationId}`}>
+                    <button className="text-green-600 hover:underline flex items-center space-x-2 mb-4">
+                        Back to Site view
+                    </button>
+                </Link>
+                <h1 className="text-4xl font-bold mb-6 text-green-600 flex items-center space-x-2">
+                    <IoHomeSharp /> <span>{mainStreetName}</span>
+                </h1>
+                {/* <div className="w-full grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"> */}
+                <div className='flex flex-wrap justify-around min-w-[360px]'>
+                    {houses.streetNumbers.map(house => (
+                        <div key={house.id} className="min-w-[360px] m-2 p-2">
+                            <Link
+                                href={`/locations/streets/house/${house.id}`}
+                                className={`w-full max-w-lg h-full flex flex-col items-start justify-between py-4 lg:py-6 xl:py-8 px-6 lg:px-8 xl:px-10 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:opacity-70 ${getConditionalClass(
+                                    house?.statusAttempt ?? " ",
+                                    house?.consent ?? " "
+                                )}`}
+                            >
+                                <div className="flex flex-row w-full justify-between border-b border-white py-2 mb-2">
+                                    <div className="flex flex-col justify-center items-center p-2">
+                                        <h1 className="text-xl font-bold leading-tight mb-2 text-center">
+                                            {house.streetNumber}
+                                        </h1>
                                     </div>
-                                    <div className='flex flex-col justify-center p-2 items-center'>
-                                        <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-semibold  leading-snug mb-2">Type:</h2>
-                                        <span className="text-xs sm:text-sm md:text-base lg:text-lg">{house.type}</span>
+                                    <div className="flex flex-row justify-center items-center p-2 space-x-4">
+                                        <div className="flex flex-col justify-center items-center">
+                                            <h2 className="text-md font-semibold leading-snug mb-1">Att:</h2>
+                                            <span className="text-sm">
+                                                {house.statusAttempt === "Consent Final" ? house.consent : house.statusAttempt}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col justify-center items-center">
+                                            <h2 className="text-md font-semibold leading-snug mb-1">Type:</h2>
+                                            <span className="text-sm">{house.type ?? 'To verify'}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed text-gray-700">
+                                <div className="text-sm leading-relaxed text-gray-700">
                                     <span className="font-bold">Notes:</span> {house.notes?.substring(0, 40)}...
                                 </div>
                             </Link>
                         </div>
-                        {/* ); */}
-                    </Suspense>
-                ))}
+                    ))}
+                </div>
             </div>
         </main>
     );

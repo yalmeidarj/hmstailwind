@@ -1,7 +1,7 @@
 import BasicTable from '../components/BasicTable'
 import db from '../../lib/utils/db'
-import { location, house, worker, shiftLogger } from '../../../drizzle/schema'
-import { and, eq } from "drizzle-orm";
+import { location, house, worker, shiftLogger, street } from '../../../drizzle/schema'
+import { eq, and, lt, gte, ne } from "drizzle-orm";
 import ExampleWithReactQueryProvider from '../components/SortingTable';
 
 
@@ -15,15 +15,25 @@ async function getLocationsData() {
 async function getHousesData() {
     // const houses = await db.select().from(house).execute();
     const houses = await db.query.house.findMany({
+        where:
+            and(
+                eq(house.locationId, 97),
+                eq(house.lastUpdatedBy, 'Yuri Almeida')
+            ),
         with: {
             street: true,
             location: true,
         },
-    });
+    }).execute();
+
+    // const jHouses = JSON.stringify(houses);
+
     const allShiftLoggerWithDatesAsStrings = houses.map(houses => ({
         ...houses,
+        // streetName: street,
+        // locationName: location.name,
         lastUpdated: houses.lastUpdated ? new Date(houses.lastUpdated).toISOString() : null,
-        // finishedDate: houses.finishedDate ? new Date(houses.finishedDate).toISOString() : null,
+
     }));
 
     return allShiftLoggerWithDatesAsStrings;
@@ -132,7 +142,8 @@ export default async function page() {
         },
         {
             header: 'Street',
-            accessorKey: 'Street.name',
+            accessorKey: 'street.name',
+            // accessorKey: 'streetName',
             footer: 'Street',
         },
         {
@@ -143,6 +154,7 @@ export default async function page() {
         {
             header: 'Location',
             accessorKey: 'location.name',
+            // accessorKey: 'locationName',
             footer: 'Location',
         },
         // {
@@ -297,6 +309,7 @@ export default async function page() {
     const filteredData = await getHousesDataFiltered();
     return (
         <div className="container mx-auto py-8 px-4">
+            {/* <button type="button" className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Export CSV</button> */}
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Active Shifts</h1>
                 <BasicTable data={dataShiftLogger} columns={ShiftLoggerColumns} />
