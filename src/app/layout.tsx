@@ -10,16 +10,18 @@ import ShiftManager from './components/ShiftManager';
 import db from '@/lib/utils/db';
 
 
-import { location } from '../../drizzle/schema';
+import { location, shiftLogger } from '../../drizzle/schema';
 import UserInfo from './components/UserInfo';
+import { DateTime } from 'luxon';
+import { and, eq } from 'drizzle-orm';
+import ShiftInfoCard from './components/ShiftInfoCard';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'HMS',
-  description: 'Door to Door Management',
+  title: 'TDX Solutions',
+  description: 'Project - Bell consent/ Fiber Optic Installation',
 }
-
 
 
 async function getLocationsDataDrizzle() {
@@ -28,6 +30,7 @@ async function getLocationsDataDrizzle() {
   return locations;
 }
 
+// TODO: turn Header into a component
 const Header = () => (
   <header className="md:flex md:justify-around md:items-center w-full py-8 px-6">
     <Link href="/">
@@ -96,7 +99,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // const { userId } = auth();
 
   const data = await getLocationsDataDrizzle()
   return (
@@ -108,9 +110,11 @@ export default async function RootLayout({
             <Header />
           </div>
           <ShiftManager sites={data} />
+          <ShiftInfoCard />
           {children}
         </body>
       </ClerkProvider>
     </html>
   )
+
 }
