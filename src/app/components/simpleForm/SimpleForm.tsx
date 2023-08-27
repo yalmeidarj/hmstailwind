@@ -140,9 +140,9 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
         data.lastUpdated = DateTime.now().toJSDate();
         data.name = name;
         data.lastName = lastName;
+        // data.statusAttempt = statusAttempt;
         data.statusAttempt = statusAttempt;
-        data.statusAttempt = statusAttempt;
-        data.consent = consent;
+        data.consent = statusAttempt;
         // if (data.statusAttempt === "Consent Final") {
         //     data.statusAttempt = consent;
         // } else {
@@ -209,11 +209,11 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
             let endpoint = `https://hmsapi.herokuapp.com/updatedhousesfinal/${shiftLoggerId}`;
             let bodyData: { updatedHousesFinal?: number, updatedHouses?: number };
 
-            if (statusAttempt !== "consent final yes" && statusAttempt !== "consent final no") {
+            if (statusAttempt === "Consent Final Yes" || statusAttempt === "Consent Final No") {
+                bodyData = { updatedHousesFinal: 1 };
+            } else {
                 endpoint = `https://hmsapi.herokuapp.com/updatedhouses/${shiftLoggerId}`;
                 bodyData = { updatedHouses: 1 };
-            } else {
-                bodyData = { updatedHousesFinal: 1 };
             }
 
             const finalFetch = await fetch(endpoint, {
@@ -272,7 +272,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                         />
                         {errors.type && <Alert severity="error">{errors.type.message}</Alert>}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={6}>
                         <Controller
                             name="statusAttempt"
                             control={control}
@@ -280,7 +280,6 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                                 <Select
                                     {...field}
                                     fullWidth
-                                    value={consent}
 
                                     onChange={(e) => setStatusAttempt(e.target.value)}
                                 >
@@ -291,7 +290,8 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                                     <MenuItem value={"Door Knock Attempt 4"}>Door Knock Attempt 4</MenuItem>
                                     <MenuItem value={"Door Knock Attempt 5"}>Door Knock Attempt 5</MenuItem>
                                     <MenuItem value={"Door Knock Attempt 6"}>Door Knock Attempt 6</MenuItem>
-                                    <MenuItem value={"Consent Final"}>Consent Final</MenuItem>
+                                    <MenuItem value={"Consent Final Yes"}>Consent Final Yes</MenuItem>
+                                    <MenuItem value={"Consent Final No"}>Consent Final No</MenuItem>
                                     <MenuItem value={"engineer visit required"}>Engineer Visit Required</MenuItem>
                                     <MenuItem value={"Home Does Not Exist"}>Home Does Not Exist</MenuItem>
 
@@ -300,7 +300,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                         />
                         {errors.statusAttempt && <Alert severity="error">{errors.statusAttempt.message}</Alert>}
                     </Grid>
-                    <Grid item xs={3}>
+                    {/* <Grid item xs={3}>
                         <Controller
                             name="consent"
                             control={control}
@@ -317,7 +317,7 @@ const SimpleForm = ({ params }: SimpleFormProps) => {
                             )}
                         />
                         {errors.statusAttempt && <Alert severity="error">{errors.statusAttempt.message}</Alert>}
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={6}>
                         <Controller
                             name="lastName"

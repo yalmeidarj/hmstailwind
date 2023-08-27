@@ -46,6 +46,10 @@ function getConditionalClass(statusAttempt: string, consent: string) {
             } else {
                 return 'bg-gray-200 text-gray-900';
             }
+        case 'Consent Final Yes':
+            return 'bg-green-200 text-green-900';
+        case 'Consent Final No':
+            return 'bg-red-200 text-red-900';
         case 'engineer visit required':
             return 'bg-teal-200 text-teal-900';
         case 'Home Does Not Exist':
