@@ -1,9 +1,14 @@
 import BasicTable from '../components/BasicTable'
+// import { createColumnHelper } from '@tanstack/react-table'
 import db from '../../lib/utils/db'
 import { location, house, worker, shiftLogger, street } from '../../../drizzle/schema'
-import { eq, and, lt, gte, ne } from "drizzle-orm";
-import ExampleWithReactQueryProvider from '../components/SortingTable';
+import { eq, and, lt, lte, gte, ne, desc, asc } from "drizzle-orm";
+import { currentUser } from '@clerk/nextjs';
 
+
+// import ExampleWithReactQueryProvider from '../components/SortingTable';
+// import da from 'date-fns/locale/da';
+// import { createColumnHelper } from '@tanstack/react-table';
 
 
 async function getLocationsData() {
@@ -13,12 +18,26 @@ async function getLocationsData() {
 }
 
 async function getHousesData() {
+
+    // Calculate start and end times for the current day
+    const now = new Date();
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Convert these dates to ISO format for comparison in the database query
+    const startISO = startOfDay.toISOString();
+    const endISO = endOfDay.toISOString();
+
     // const houses = await db.select().from(house).execute();
     const houses = await db.query.house.findMany({
         where:
             and(
-                eq(house.locationId, 97),
-                eq(house.lastUpdatedBy, 'Yuri Almeida')
+                // eq(house.locationId, 97),
+                // eq(house.lastUpdatedBy, 'Yuri Almeida'),
+                gte(house.lastUpdated, startISO),  // Greater than or equal to start of the day
+                lte(house.lastUpdated, endISO)     // Less than or equal to end of the day
             ),
         with: {
             street: true,
@@ -110,8 +129,12 @@ async function getShiftLoggerData() {
     return shiftLoggersWithWorkersAndLocations;
 }
 
-async function getShiftLoggerPastData() {
-    const shiftLoggers = await db.select().from(shiftLogger).where(eq(shiftLogger.isActive, false)).execute();
+async function getShiftLoggerPastData(workerId: any) {
+    const shiftLoggers = await db.select().from(shiftLogger)
+        .where(and(eq(shiftLogger.isActive, false), eq(shiftLogger.workerId, workerId)))
+        .orderBy(desc(shiftLogger.startingDate))
+        .execute();
+
     const allShiftLoggerWithDatesAsStrings = shiftLoggers.map(shiftLogger => ({
         ...shiftLogger,
         startingDate: shiftLogger.startingDate ? new Date(shiftLogger.startingDate).toISOString() : null,
@@ -131,21 +154,80 @@ async function getShiftLoggerPastData() {
     return shiftLoggersWithWorkersAndLocations;
 }
 
+// Define your row shape
+type House = {
+    streetNumber: string
+    lastUpdatedBy: string
+    lastUpdated: string
+    statusAttempt: string
+    type: string
+}
+
+
 
 export default async function page() {
 
+    // const columnHelper = createColumnHelper<House>()
+    // const housesColumns = [
+    //     columnHelper.display({
+    //         // Display Column
+    //         id: 'actions',
+    //         cell: props => { props.row },
+    //     }),
+    //     // Grouping Column
+    //     columnHelper.group({
+    //         header: 'Address Info',
+    //         footer: props => props.column.id,
+    //         columns: [
+    //             // Accessor Column
+    //             columnHelper.accessor('streetNumber', {
+    //                 header: () => 'Street Number',
+    //                 footer: props => props.column.id,
+    //             }),
+    //         ],
+    //     }),
+    //     // Grouping Column
+    //     columnHelper.group({
+    //         header: 'Update Info',
+    //         footer: props => props.column.id,
+    //         columns: [
+    //             // Accessor Column
+    //             columnHelper.accessor('lastUpdatedBy', {
+    //                 header: 'Last Updated By',
+    //                 footer: props => props.column.id,
+    //             }),
+    //             // Accessor Column
+    //             columnHelper.accessor('lastUpdated', {
+    //                 header: 'Last Updated On',
+    //                 footer: props => props.column.id,
+    //             }),
+    //         ],
+    //     }),
+    //     // Grouping Column
+    //     columnHelper.group({
+    //         header: 'House Details',
+    //         footer: props => props.column.id,
+    //         columns: [
+    //             // Accessor Column
+    //             columnHelper.accessor('statusAttempt', {
+    //                 header: 'Status Attempt',
+    //                 footer: props => props.column.id,
+    //             }),
+    //             // Accessor Column
+    //             columnHelper.accessor('type', {
+    //                 header: 'Type',
+    //                 footer: props => props.column.id,
+    //             }),
+    //         ],
+    //     }),
+    // ]
     const housesColumns = [
         {
             header: 'Street Number',
             accessorKey: 'streetNumber',
             footer: 'Street Number',
         },
-        {
-            header: 'Street',
-            accessorKey: 'street.name',
-            // accessorKey: 'streetName',
-            footer: 'Street',
-        },
+
         {
             header: 'Last Updated By',
             accessorKey: 'lastUpdatedBy',
@@ -179,8 +261,7 @@ export default async function page() {
             header: 'Type',
             accessorKey: 'type',
             footer: 'Type',
-        },
-
+        }
     ]
 
     const locationsColumns = [
@@ -300,31 +381,33 @@ export default async function page() {
         }
     ]
 
-    const dataLocations = await getLocationsData();
+    // const dataLocations = await getLocationsData();
+    // const dataWorkers = await getWorkersData();
+    // const filteredData = await getHousesDataFiltered();
+    const user = await currentUser();
+    const id = user?.unsafeMetadata.id as number;
     const dataHouses = await getHousesData();
-    const dataWorkers = await getWorkersData();
     const dataShiftLogger = await getShiftLoggerData();
-    const dataShiftLoggerPast = await getShiftLoggerPastData();
+    const dataShiftLoggerPast = await getShiftLoggerPastData(id);
 
-    const filteredData = await getHousesDataFiltered();
     return (
         <div className="container mx-auto py-8 px-4">
-            {/* <button type="button" className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Export CSV</button> */}
-            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
+
+            {/* No need for a table with active shifts, as it is already displayed in ShiftInfoCard
+             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Active Shifts</h1>
                 <BasicTable data={dataShiftLogger} columns={ShiftLoggerColumns} />
-            </div>
+            </div> */}
+
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Past Shifts</h1>
                 <BasicTable data={dataShiftLoggerPast} columns={ShiftLoggerColumns} />
             </div>
-
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Houses</h1>
                 <BasicTable data={dataHouses} columns={housesColumns} />
-                {/* {dataHouses.map} */}
             </div>
-            <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
+            {/* <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Locations</h1>
                 <BasicTable data={dataLocations} columns={locationsColumns} />
             </div>
@@ -335,11 +418,8 @@ export default async function page() {
             <div className="mb-6 bg-gray-100 p-4 rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">Location Report</h1>
                 <BasicTable data={dataWorkers} columns={workerColumns} />
-                {/* </div> */}
-
             </div>
-
-            <ExampleWithReactQueryProvider />
+            <ExampleWithReactQueryProvider /> */}
         </div>
     )
 }
