@@ -24,7 +24,7 @@ async function getHousesDataFiltered(locationId: number) {
 
 	const totalHouses = allHousesWithDatesAsStrings.length;
 	const visitedHouses = allHousesWithDatesAsStrings.filter(house => house.lastUpdated !== null).length;
-	const consentFinal = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Consent Final');
+	const consentFinal = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Consent Final' || house.consent === 'Consent Final Yes' || house.consent === 'Consent Final No' || house.consent === 'Yes' || house.consent === 'No');
 	// const consentFinalYes = consentFinal.filter(house => house.consent === 'Yes').length;
 	const consentFinalYes = consentFinal.filter(house => house.consent === 'Yes' || house.consent === 'Consent Final Yes').length;
 
