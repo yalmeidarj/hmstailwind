@@ -28,7 +28,7 @@ async function getHousesDataFiltered(locationId: number) {
 	// const consentFinalYes = consentFinal.filter(house => house.consent === 'Yes').length;
 	const consentFinalYes = consentFinal.filter(house => house.consent === 'Yes' || house.consent === 'Consent Final Yes').length;
 
-	const consentFinalNo = consentFinal.filter(house => house.consent === 'No').length;
+	const consentFinalNo = consentFinal.filter(house => house.consent === 'No' || house.consent === 'Consent Final No').length;
 	const secondAttempt = allHousesWithDatesAsStrings.filter(house => house.statusAttempt === 'Door Knock Attempt 2').length;
 	const percentageYes = (consentFinalYes / totalHouses) * 100;
 	const percentageNo = (consentFinalNo / totalHouses) * 100;

@@ -35,9 +35,9 @@ async function getHousesData() {
         where:
             and(
                 // eq(house.locationId, 97),
-                // eq(house.lastUpdatedBy, 'Yuri Almeida'),
-                gte(house.lastUpdated, startISO),  // Greater than or equal to start of the day
-                lte(house.lastUpdated, endISO)     // Less than or equal to end of the day
+                eq(house.lastUpdatedBy, 'Alex Koessler'),
+                // gte(house.lastUpdated, startISO),  // Greater than or equal to start of the day
+                // lte(house.lastUpdated, endISO)     // Less than or equal to end of the day
             ),
         with: {
             street: true,

@@ -36,6 +36,9 @@ next-env.d.ts
 
 # other
 py.py
+gpt.py
+output.csv
+testing.csv
 
 FormWrapper.tsx
 MyDocument .tsx
